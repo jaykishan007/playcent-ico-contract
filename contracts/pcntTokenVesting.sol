@@ -12,7 +12,10 @@ import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 contract PlaycentToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradeable{
 	using SafeMathUpgradeable for uint;
 
-	
+	/**
+	 * @notice The initialize funtion acts as the constructor in Upgradable Contracts
+	 * @dev All minted tokens goes to the owner of the contract
+	*/
 	function initialize() initializer public{
 		__Ownable_init();
         __ERC20_init('Playcent','PCNT');		
