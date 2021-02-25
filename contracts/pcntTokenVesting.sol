@@ -9,7 +9,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20PausableUpgradeable
 import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 
 
-contract PlayToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradeable{
+contract PlaycentToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradeable{
 	using SafeMathUpgradeable for uint;
 	/**
 	 * Category 0 - Team
