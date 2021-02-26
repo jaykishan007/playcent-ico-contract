@@ -54,17 +54,17 @@ contract PlaycentToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradea
 		__ERC20Pausable_init();
 		_mint(owner(),60000000 ether);
  		
- 		vestCategory[0] = vestingDetails(0,365 days,973 days,5000000000000000000,9000000 ether); // Team
-		vestCategory[1] = vestingDetails(1,91 days, 395 days,10000000000000000000,4800000 ether); // Operations
-		vestCategory[2] = vestingDetails(2,91 days, 395 days,10000000000000000000,4800000 ether); // Marketing/Partners
-		vestCategory[3] = vestingDetails(3,30 days, 334 days,10000000000000000000,2400000 ether); // Advisors
-		vestCategory[4] = vestingDetails(4,213 days, 334 days,10000000000000000000,4800000 ether); //Staking/Early Incentive Rewards
-		vestCategory[5] = vestingDetails(5,91 days, 852 days,4000000000000000000,9000000 ether); //Play Mining	
-		vestCategory[6] = vestingDetails(6,182 days, 912 days,1000000000000000000,4200000 ether); //Reserve	
+ 		vestCategory[0] = vestingDetails(0,360 days,960 days,5 ether,9000000 ether); // Team
+		vestCategory[1] = vestingDetails(1,90 days, 390 days,10 ether,4800000 ether); // Operations
+		vestCategory[2] = vestingDetails(2,90 days, 390 days,10 ether,4800000 ether); // Marketing/Partners
+		vestCategory[3] = vestingDetails(3,30 days, 330 days,10 ether,2400000 ether); // Advisors
+		vestCategory[4] = vestingDetails(4,7 days, 300 days,10 ether,4800000 ether); //Staking/Early Incentive Rewards
+		vestCategory[5] = vestingDetails(5,90 days, 840 days,4 ether,9000000 ether); //Play Mining	
+		vestCategory[6] = vestingDetails(6,180 days, 900 days,4160000000000000000,4200000 ether); //Reserve	
 		// Sale Vesting Strategies
-		vestCategory[7] = vestingDetails(7,60 days,213 days,10000000000000000000,5700000 ether); // Seed Sale
-		vestCategory[8] = vestingDetails(8,60 days,150 days,15000000000000000000,5400000 ether); // Private Sale 1
-		vestCategory[9] = vestingDetails(9,60 days,120 days,20000000000000000000,5100000 ether); // Private Sale 2
+		vestCategory[7] = vestingDetails(7,60 days,210 days,10 ether,5700000 ether); // Seed Sale
+		vestCategory[8] = vestingDetails(8,60 days,150 days,15 ether,5400000 ether); // Private Sale 1
+		vestCategory[9] = vestingDetails(9,60 days,120 days,20 ether,5100000 ether); // Private Sale 2
 	}
 
 
