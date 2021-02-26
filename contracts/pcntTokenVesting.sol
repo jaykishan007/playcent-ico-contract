@@ -98,7 +98,7 @@ contract PlaycentToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradea
 	}
 
 	function  getTgeTIME() public pure returns(uint256){
-		return 1615746600;
+		return 1615746600; // March 15th
 	}
 	
 	/**
