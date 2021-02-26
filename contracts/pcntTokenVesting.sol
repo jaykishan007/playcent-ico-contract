@@ -42,6 +42,7 @@ contract PlaycentToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradea
 		uint remainingAmountToTransfer;
 		uint totalAmountClaimed;
 		bool isVesting;
+		bool tgeTokensClaimed;
 	}
 
 	mapping (uint => vestingDetails) public vestCategory;
@@ -95,6 +96,11 @@ contract PlaycentToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradea
 	function daysInSeconds() internal pure returns(uint256){		
 		return 86400;
 	}
+
+	function  getTgeTIME() public pure returns(uint256){
+		return 1615746600;
+	}
+	
 	/**
 	 * @notice - Allows only the Owner to ADD an array of Addresses as well as their Vesting Amount
 	 		   - The array of user and amounts should be passed along with the vestingCategory Index. 
@@ -146,7 +152,8 @@ contract PlaycentToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradea
 			_vestPercent,
 			_totalAmount,
 			0,
-			true	
+			true,
+			false	
 		);
 		userToVestingDetails[_userAddresses] = userVestingData;
 	}
@@ -208,8 +215,6 @@ contract PlaycentToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradea
 	 * @notice Calculates the amount of tokens to be transferred at any given point of time
 	 * @param _userAddresses address of the User  
 	 */
-
-	// yET TO BE TESTED
 	 function calculateClaimableTokens(address _userAddresses) public view checkVestingStatus(_userAddresses) returns(uint256){	 	
 	 	// Get Vesting Details
 	 	vestAccountDetails memory vestData = userToVestingDetails[_userAddresses];
@@ -237,23 +242,49 @@ contract PlaycentToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradea
 	 	}else{ // if current time has crossed the Vesting Cliff but not the total Vesting Duration
 	 		uint256 amountPerMonth = (vestData.totalAmount.mul(vestRate)).div(100000000000000000000);
 	 		uint256 totalMonthsElapsed = timeElapsed.div(oneMonthInSeconds);
-	 		require (totalMonthsElapsed > 0,"Number of months elapsed is ZERO");
-	 		totalClaimableAmount = (amountPerMonth.mul(totalMonthsElapsed)).sub(vestData.totalAmountClaimed);
+	 		// Calculating Actual Months(Excluding the CLIFF) to initiate vesting
+	 		uint actualMonthElapsed = totalMonthsElapsed.sub(vestData.vestingCliff.div(oneMonthInSeconds)); 
+	 		require (actualMonthElapsed > 0,"Number of months elapsed is ZERO");
+	 		totalClaimableAmount = (amountPerMonth.mul(actualMonthElapsed)).sub(vestData.totalAmountClaimed);
 	 	}
 	 	return totalClaimableAmount;
 
 	 }
 	 
 	function _sendTokens(address _beneficiary, uint256 _amountOfTokens) internal returns(bool){
-		super.transfer(_beneficiary,_amountOfTokens);
+		_transfer(address(this),_beneficiary,_amountOfTokens);
 		return true;
 	}
 
-	// yET TO BE TESTED
-	function claimVestTokens(address _userAddresses) external checkVestingStatus(_userAddresses) returns(bool){
+	function  claimTGETokens(address _userAddresses) external checkVestingStatus(_userAddresses) returns(bool){
+		uint256 currentTime = getCurrentTime();
+		require (currentTime>getTgeTIME(), "Token Generation Event Not Started Yet");
 		// Get Vesting Details
 	 	vestAccountDetails memory vestData = userToVestingDetails[_userAddresses];
 
+	 	require (vestData.categoryId >= 6 && vestData.categoryId <= 9, "Vesting Category doesn't belong to SALE VEsting" );
+	 	require (vestData.tgeTokensClaimed == false, "TGE Tokens Have already been claimed for Given Address");
+	 	
+	 	uint256 totalAmount = vestData.totalAmount;
+	 	uint256 vestRate = vestData.vestingPercent;
+
+	 	uint256 tokensToTransfer = totalAmount.mul(vestRate).div(100000000000000000000);
+
+	 	// Updating Contract State
+	 	vestData.totalAmountClaimed = tokensToTransfer;
+		vestData.remainingAmountToTransfer = vestData.remainingAmountToTransfer.sub(tokensToTransfer);
+		vestData.tgeTokensClaimed = true;
+		userToVestingDetails[_userAddresses] = vestData;
+		_sendTokens(_userAddresses,tokensToTransfer);
+
+
+	}
+	
+
+	function claimVestTokens(address _userAddresses) external checkVestingStatus(_userAddresses) returns(bool){
+		// Get Vesting Details
+	 	vestAccountDetails memory vestData = userToVestingDetails[_userAddresses];
+		
 		uint256 tokensToTransfer = calculateClaimableTokens(_userAddresses);
 		uint256 contractTokenBalance = balanceOf(address(this));
 		require(contractTokenBalance > tokensToTransfer,"Not Enough Token Balance in Contract");
