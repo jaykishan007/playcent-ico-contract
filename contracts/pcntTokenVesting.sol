@@ -178,21 +178,21 @@ contract PlaycentToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradea
 
 		if(category == 7){
             if(timeElapsedInDays > 60 && timeElapsedInDays <= 213 ){
-            	currentVestRate = 15000000000000000000;
+            	currentVestRate = 15 ether;
             }
 		}
 		if(category == 8){
             if(timeElapsedInDays > 60 && timeElapsedInDays <= 120 ){
-            	currentVestRate = 20000000000000000000;
+            	currentVestRate = 20 ether;
             }else if(timeElapsedInDays > 120 && timeElapsedInDays <= 150 ){
-            	currentVestRate = 25000000000000000000;
+            	currentVestRate = 25 ether;
             }
 		}
 		if(category == 9){
             if(timeElapsedInDays > 60 && timeElapsedInDays <= 90 ){
-            	currentVestRate = 20000000000000000000;
+            	currentVestRate = 20 ether;
             }else if(timeElapsedInDays > 90 && timeElapsedInDays <= 120 ){
-            	currentVestRate = 30000000000000000000;
+            	currentVestRate = 30 ether;
             }
 		}
 		return currentVestRate;
