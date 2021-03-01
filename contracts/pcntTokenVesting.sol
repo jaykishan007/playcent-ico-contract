@@ -36,7 +36,6 @@ contract PlayToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradeable{
         uint8 vestingIndex;
         address walletAddress;
         uint totalTokensAllocated;
-        uint startTime;
         uint tgeTokensAllocated;
         uint monthlyTokens;
         uint vestingDuration;
@@ -158,7 +157,6 @@ contract PlayToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradeable{
             _vestingIndex,
             _userAddresses,
             _totalAmount,
-            block.timestamp,
             _tgeAmount,
             _monthlyAmount,
             _vestingDuration,
@@ -201,7 +199,7 @@ contract PlayToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradeable{
         // Get Time Details
         uint256 actualClaimableAmount;
         uint256 tokensAfterElapsedMonths;
-        uint256 vestStartTime = vestData.startTime;
+        uint256 vestStartTime = getTgeTIME();
         uint256 currentTime = getCurrentTime();
         uint256 timeElapsed = currentTime.sub(vestStartTime);
         uint256 totalMonthsElapsed = timeElapsed.div(monthInSeconds());
@@ -233,15 +231,17 @@ contract PlayToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradeable{
 
      }
 
+    
     /**
-     * @notice An Internal Function to transfer tokens from this contract to the user
+     * @notice Function to transfer tokens from this contract to the user
      * @param _beneficiary address of the User  
      * @param _amountOfTokens number of tokens to be transferred
      */
-    function _sendTokens(address _beneficiary, uint256 _amountOfTokens) internal returns(bool){
+    function _sendTokens(address _beneficiary, uint256 _amountOfTokens) private returns(bool){
         _transfer(address(this),_beneficiary,_amountOfTokens);
         return true;
     }
+
 
     /**
      * @notice Calculates and Transfer the total tokens to be transferred to the user after Token Generation Event is over
@@ -290,7 +290,6 @@ contract PlayToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradeable{
         vestData.totalVestingTokensClaimed += tokensToTransfer;
         if(_totalTokensClaimed.add(tokensToTransfer) == vestData.totalTokensAllocated){
             vestData.isVesting = false;
-            vestData.isTgeTokensClaimed = true;
         }
         userToVestingDetails[_userAddresses][_vestingIndex] = vestData;
         _sendTokens(_userAddresses,tokensToTransfer);
