@@ -55,135 +55,266 @@ it("Transfer tokens to contract", async()=>{
  // })
 
 
-  it("User 6 should return expected CLaim amount before Cliff", async()=>{
-      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[6],9);
-      console.log(` Before CLiff ${expectedClaims_user5.toString()}`)
+  it("User 6 should not be able to claim amount before Cliff", async()=>{
+       try{
+           await tokenInstance.calculateClaimableTokens(accounts[6],9);
+      }catch(error){
+        const invalidOpcode = error.message.search("revert") >= 0;
+        console.log(error.message);
+        assert(invalidOpcode,`Expected revert but Got ${error}`)
+      }
  })
 
 
-    // 91 days later
+    // 30 days later
   it("Time should increase by 30 Days", async() =>{
     await time.increase(time.duration.days(30));
   })
 
-
- //  it("User 5 should return expected CLaim amount before Cliff", async()=>{
- //      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[5],8);
- //     // console.log(` After 30 days ${expectedClaims_user5.toString()}`)
- // })
-
-    it("User 6 should return expected CLaim amount before Cliff", async()=>{
-      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[6],9);
-      console.log(` After 30 days ${expectedClaims_user5.toString()}`)
+    it("User 6 should not be able to claim amount before Cliff after 1 month", async()=>{
+       try{
+           await tokenInstance.calculateClaimableTokens(accounts[6],9);
+      }catch(error){
+        const invalidOpcode = error.message.search("revert") >= 0;
+        console.log(error.message);
+        assert(invalidOpcode,`Expected revert but Got ${error}`)
+      }
  })
-
+    // 60
   it("Time should increase by 60 Days", async() =>{
     await time.increase(time.duration.days(30));
   })
 
-  it("User 6 should claim TGE Tokens", async()=>{
-      await tokenInstance.claimTGETokens(accounts[6],9);
-      const balanceUser6 = await tokenInstance.balanceOf(accounts[6]);
-      console.log(` After tge balance - ${balanceUser6.toString()}`)
- })
-
-
- //  it("User 5 should be able to CLaim TGE tokens", async()=>{
- //      const expectedClaims_user5 = await tokenInstance.claimTGETokens(accounts[5],8);
-      
- //      const user5_balance = await tokenInstance.balanceOf(accounts[5]);
- //      //console.log(user5_balance.toString());
+ //  it("User 6 should claim TGE Tokens", async()=>{
+ //      await tokenInstance.claimTGETokens(accounts[6],9);
+ //      const balanceUser6 = await tokenInstance.balanceOf(accounts[6]);
+ //      console.log(` After tge balance - ${balanceUser6.toString()}`)
  // })
 
-  it("User 6 should return expected CLaim amount before Cliff", async()=>{
-      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[6],9);
-      console.log(` After 60 days ${expectedClaims_user5.toString()}`)
- })
+    it("User 6 should not be able to claim amount before Cliff after 1 month", async()=>{
+        const balanceBefore = "0";
+        const balanceAfter = ether('400');
 
+        const totalAmountAllocated_user6 = ether('2000');
+        const expectedClaim_user6 = ether('400');
+        const totalClaimed_user6 = ether('400');
+
+
+        const balanceBefore_user6 = await tokenInstance.balanceOf(accounts[6]);
+        const claimablTokens_before = await tokenInstance.calculateClaimableTokens(accounts[6],9);
+        await tokenInstance.claimVestTokens(accounts[6],9,{from:accounts[6]});
+
+        const totalClaimed = await tokenInstance.totalTokensClaimed(accounts[6],9);
+        const userVestingData_6 = await tokenInstance.userToVestingDetails(accounts[6],9);
+        const balanceAfter_user6 = await tokenInstance.balanceOf(accounts[6]);
+
+        assert.equal(balanceBefore_user6.toString(),balanceBefore.toString(),"Balance Before is Wrong");
+        assert.equal(balanceAfter_user6.toString(),balanceAfter.toString(),"Balance after is not right");
+        assert.equal(totalClaimed.toString(),totalClaimed_user6.toString(),"Total Claimed is wrong");
+        assert.equal(claimablTokens_before.toString(),expectedClaim_user6.toString(),"Expected claims is wrong")
+        assert.equal(userVestingData_6[9],true,"Vesting is false");
+        assert.equal(userVestingData_6[10],false,"TGe Claimed is true");
+
+       })
+
+  it("User 6 should not be able to claim amount  twice after 1 month", async()=>{
+       try{
+           await tokenInstance.claimVestTokens(accounts[6],9,{from:accounts[6]});
+      }catch(error){
+        const invalidOpcode = error.message.search("revert") >= 0;
+        console.log(error.message);
+        assert(invalidOpcode,`Expected revert but Got ${error}`)
+      }
+  })
+
+  // TGE TOKEN CLAIM CHECK CHECK
+
+    it("User 6 should not be able to claim TGE TOKENS", async()=>{
+        const balanceBefore = ether('400');
+        const balanceAfter = ether('800');
+
+        const totalAmountAllocated_user6 = ether('2000');
+        const expectedClaim_user6 = ether('400');
+        const totalClaimed_user6 = ether('800');
+
+
+        const balanceBefore_user6 = await tokenInstance.balanceOf(accounts[6]);
+        await tokenInstance.claimTGETokens(accounts[6],9,{from:accounts[6]});
+
+        const totalClaimed = await tokenInstance.totalTokensClaimed(accounts[6],9);
+        const userVestingData_6 = await tokenInstance.userToVestingDetails(accounts[6],9);
+        const balanceAfter_user6 = await tokenInstance.balanceOf(accounts[6]);
+
+        assert.equal(balanceBefore_user6.toString(),balanceBefore.toString(),"Balance Before is Wrong");
+        assert.equal(balanceAfter_user6.toString(),balanceAfter.toString(),"Balance after is not right");
+        assert.equal(totalClaimed.toString(),totalClaimed_user6.toString(),"Total Claimed is wrong");
+        assert.equal(userVestingData_6[9],true,"Vesting is false");
+        assert.equal(userVestingData_6[10],true,"TGe Claimed is true");
+
+       })
+       // it("User 4 should not be able to claim TGE TOKENS", async()=>{
+       //  const balanceBefore = "0";
+       //  const balanceAfter = ether('200');
+
+       //  const totalAmountAllocated_user6 = ether('2000');
+       //  const totalClaimed_user6 = ether('200');
+
+
+       //  const balanceBefore_user6 = await tokenInstance.balanceOf(accounts[4]);
+       //  await tokenInstance.claimTGETokens(accounts[4],7,{from:accounts[4]});
+
+       //  const totalClaimed = await tokenInstance.totalTokensClaimed(accounts[4],7);
+       //  const userVestingData_6 = await tokenInstance.userToVestingDetails(accounts[4],7);
+       //  const balanceAfter_user6 = await tokenInstance.balanceOf(accounts[4]);
+
+       //  assert.equal(balanceBefore_user6.toString(),balanceBefore.toString(),"Balance Before is Wrong");
+       //  assert.equal(balanceAfter_user6.toString(),balanceAfter.toString(),"Balance after is not right");
+       //  assert.equal(totalClaimed.toString(),totalClaimed_user6.toString(),"Total Claimed is wrong");
+       //  assert.equal(userVestingData_6[9],true,"Vesting is false");
+       //  assert.equal(userVestingData_6[10],true,"TGe Claimed is true");
+
+       // })
 
   it("Time should increase by 90 Days", async() =>{
     await time.increase(time.duration.days(30));
   })
 
+  it("User 6 should not be able to claim amount before Cliff after 3 month from Cliff", async()=>{
+        const balanceBefore = ether('800');
+        const balanceAfter = ether('1400');
 
- //  it("User 5 should return expected CLaim amount before Cliff", async()=>{
- //      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[5],8);
- //    //  console.log(` After 90 days ${expectedClaims_user5.toString()}`)
- // })
+        const totalAmountAllocated_user6 = ether('2000');
+        const expectedClaim_user6 = ether('600');
+        const totalClaimed_user6 = ether('1400');
 
-    it("User 6 should return expected CLaim amount before Cliff", async()=>{
-      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[6],9);
-      console.log(` After 90 days ${expectedClaims_user5.toString()}`)
- })
+
+        const balanceBefore_user6 = await tokenInstance.balanceOf(accounts[6]);
+        const claimablTokens_before = await tokenInstance.calculateClaimableTokens(accounts[6],9);
+        await tokenInstance.claimVestTokens(accounts[6],9,{from:accounts[6]});
+
+        const totalClaimed = await tokenInstance.totalTokensClaimed(accounts[6],9);
+        const userVestingData_6 = await tokenInstance.userToVestingDetails(accounts[6],9);
+        const balanceAfter_user6 = await tokenInstance.balanceOf(accounts[6]);
+
+        assert.equal(balanceBefore_user6.toString(),balanceBefore.toString(),"Balance Before is Wrong");
+        assert.equal(balanceAfter_user6.toString(),balanceAfter.toString(),"Balance after is not right");
+        assert.equal(totalClaimed.toString(),totalClaimed_user6.toString(),"Total Claimed is wrong");
+        assert.equal(claimablTokens_before.toString(),expectedClaim_user6.toString(),"Expected claims is wrong")
+        assert.equal(userVestingData_6[9],true,"Vesting is false");
+        assert.equal(userVestingData_6[10],true,"TGe Claimed is true");
+
+       })
 
     it("Time should increase by 120 Days", async() =>{
     await time.increase(time.duration.days(30));
   })
 
 
- //  it("User 5 should return expected CLaim amount before Cliff", async()=>{
- //      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[5],8);
- //      await tokenInstance.claimVestTokens(accounts[5],8);
- //      //const expectedClaims_user5_after = await tokenInstance.calculateClaimableTokens(accounts[5],8);
+   it("User 6 should not be able to claim amount before Cliff after 3 month from Cliff", async()=>{
+        const balanceBefore = ether('1400');
+        const balanceAfter = ether('2000');
 
- //      const user5_balance = await tokenInstance.balanceOf(accounts[5]);
- //      console.log(user5_balance.toString());
- //      console.log(` After 120 days before ${expectedClaims_user5.toString()}`)
- //      //console.log(` After 120 days after ${expectedClaims_user5_after.toString()}`)
+        const totalAmountAllocated_user6 = ether('2000');
+        const expectedClaim_user6 = ether('600');
+        const totalClaimed_user6 = ether('2000');
 
- // })
 
-   it("User 6 should return expected CLaim amount before Cliff", async()=>{
-      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[6],9);
-      console.log(` After 120 days ${expectedClaims_user5.toString()}`)
- })
+        const balanceBefore_user6 = await tokenInstance.balanceOf(accounts[6]);
+        const claimablTokens_before = await tokenInstance.calculateClaimableTokens(accounts[6],9);
+        await tokenInstance.claimVestTokens(accounts[6],9,{from:accounts[6]});
 
-    it("Time should increase by 150 Days", async() =>{
-    await time.increase(time.duration.days(30));
+        const totalClaimed = await tokenInstance.totalTokensClaimed(accounts[6],9);
+        const userVestingData_6 = await tokenInstance.userToVestingDetails(accounts[6],9);
+        const balanceAfter_user6 = await tokenInstance.balanceOf(accounts[6]);
+        console.log(balanceBefore_user6.toString())
+        console.log(balanceAfter_user6.toString())
+
+        assert.equal(balanceBefore_user6.toString(),balanceBefore.toString(),"Balance Before is Wrong");
+        assert.equal(balanceAfter_user6.toString(),balanceAfter.toString(),"Balance after is not right");
+        assert.equal(totalClaimed.toString(),totalClaimed_user6.toString(),"Total Claimed is wrong");
+        assert.equal(claimablTokens_before.toString(),expectedClaim_user6.toString(),"Expected claims is wrong")
+        assert.equal(userVestingData_6[9],false,"Vesting is false");
+        assert.equal(userVestingData_6[10],true,"TGe Claimed is true");
+
+       })
+
+     it("User 6 should not be able to claim amount  twice after 3 month", async()=>{
+       try{
+           await tokenInstance.claimVestTokens(accounts[6],9,{from:accounts[6]});
+      }catch(error){
+        const invalidOpcode = error.message.search("revert") >= 0;
+        console.log(error.message);
+        assert(invalidOpcode,`Expected revert but Got ${error}`)
+      }
+  })
+
+      it("User 6 should not be able to claim amount  twice after 3 month", async()=>{
+            const userVestingData_6 = await tokenInstance.userToVestingDetails(accounts[6],9);
+                    console.log(userVestingData_6[9])
+  })
+
+    it("Time should increase by 270 Days", async() =>{
+    await time.increase(time.duration.days(180));
   })
 
 
- //  it("User 5 should return expected CLaim amount before Cliff", async()=>{
- //      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[5],8);
- //      //console.log(` After 150 days ${expectedClaims_user5.toString()}`)
- // })
+   it("User 4 should not be able to claim amount before Cliff after Complete vesting Period", async()=>{
+        const balanceBefore = ether('200');
+        const balanceAfter = ether('2000');
 
+        const totalAmountAllocated_user4 = ether('2000');
+        const expectedClaim_user4 = ether('1800');
+        const totalClaimed_user4 = ether('2000');
 
-  it("User 6 should return expected CLaim amount before Cliff", async()=>{
-      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[6],9);
-      console.log(` After 150 days ${expectedClaims_user5.toString()}`)
- })
+        const balanceBefore_user4 = await tokenInstance.balanceOf(accounts[4]);
+        const claimablTokens_before = await tokenInstance.calculateClaimableTokens(accounts[4],7);
+        await tokenInstance.claimVestTokens(accounts[4],7,{from:accounts[4]});
 
+        const totalClaimed = await tokenInstance.totalTokensClaimed(accounts[4],7);
+        const userVestingData_4 = await tokenInstance.userToVestingDetails(accounts[4],7);
+        const balanceAfter_user4 = await tokenInstance.balanceOf(accounts[4]);
+
+        console.log(balanceAfter_user4.toString())
+        console.log(totalClaimed.toString())
+  
+       //  assert.equal(balanceBefore_user4.toString(),balanceBefore.toString(),"Balance Before is Wrong");
+       //  assert.equal(balanceAfter_user4.toString(),balanceAfter.toString(),"Balance after is not right");
+       // // assert.equal(totalClaimed.toString(),totalClaimed_user4.toString(),"Total Claimed is wrong");
+       //  assert.equal(claimablTokens_before.toString(),expectedClaim_user4.toString(),"Expected claims is wrong")
+       //  assert.equal(userVestingData_4[9],false,"Vesting is false");
+       //  assert.equal(userVestingData_4[10],true,"TGe Claimed is true");
+
+       })
     it("Time should increase by 180 Days", async() =>{
     await time.increase(time.duration.days(30));
   })
 
 
- //  it("User 5 should return expected CLaim amount before Cliff", async()=>{
- //      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[5],8);
+ // //  it("User 5 should return expected CLaim amount before Cliff", async()=>{
+ // //      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[5],8);
+ // //      console.log(` After 180 days ${expectedClaims_user5.toString()}`)
+ // // })
+
+
+ //  it("User 6 should return expected CLaim amount before Cliff", async()=>{
+ //      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[6],9);
  //      console.log(` After 180 days ${expectedClaims_user5.toString()}`)
  // })
 
-
-  it("User 6 should return expected CLaim amount before Cliff", async()=>{
-      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[6],9);
-      console.log(` After 180 days ${expectedClaims_user5.toString()}`)
- })
-
-    it("Time should increase by 210 Days", async() =>{
-    await time.increase(time.duration.days(30));
-  })
+ //    it("Time should increase by 210 Days", async() =>{
+ //    await time.increase(time.duration.days(30));
+ //  })
 
 
- //  it("User 5 should return expected CLaim amount before Cliff", async()=>{
- //      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[5],8);
- //      console.log(` After 210 days ${expectedClaims_user5.toString()}`)
+ // //  it("User 5 should return expected CLaim amount before Cliff", async()=>{
+ // //      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[5],8);
+ // //      console.log(` After 210 days ${expectedClaims_user5.toString()}`)
+ // // })
+
+
+ //  it("User 6 should return expected CLaim amount before Cliff", async()=>{
+ //      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[6],9);
+ //      console.log(` After 180 days ${expectedClaims_user5.toString()}`)
  // })
-
-
-  it("User 6 should return expected CLaim amount before Cliff", async()=>{
-      const expectedClaims_user5 = await tokenInstance.calculateClaimableTokens(accounts[6],9);
-      console.log(` After 180 days ${expectedClaims_user5.toString()}`)
- })
 
 });
