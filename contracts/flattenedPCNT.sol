@@ -32,7 +32,9 @@ library AddressUpgradeable {
 
         uint256 size;
         // solhint-disable-next-line no-inline-assembly
-        assembly { size := extcodesize(account) }
+        assembly {
+            size := extcodesize(account)
+        }
         return size > 0;
     }
 
@@ -53,11 +55,17 @@ library AddressUpgradeable {
      * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
      */
     function sendValue(address payable recipient, uint256 amount) internal {
-        require(address(this).balance >= amount, "Address: insufficient balance");
+        require(
+            address(this).balance >= amount,
+            "Address: insufficient balance"
+        );
 
         // solhint-disable-next-line avoid-low-level-calls, avoid-call-value
-        (bool success, ) = recipient.call{ value: amount }("");
-        require(success, "Address: unable to send value, recipient may have reverted");
+        (bool success, ) = recipient.call{value: amount}("");
+        require(
+            success,
+            "Address: unable to send value, recipient may have reverted"
+        );
     }
 
     /**
@@ -78,8 +86,11 @@ library AddressUpgradeable {
      *
      * _Available since v3.1._
      */
-    function functionCall(address target, bytes memory data) internal returns (bytes memory) {
-      return functionCall(target, data, "Address: low-level call failed");
+    function functionCall(address target, bytes memory data)
+        internal
+        returns (bytes memory)
+    {
+        return functionCall(target, data, "Address: low-level call failed");
     }
 
     /**
@@ -88,7 +99,11 @@ library AddressUpgradeable {
      *
      * _Available since v3.1._
      */
-    function functionCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {
+    function functionCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
         return functionCallWithValue(target, data, 0, errorMessage);
     }
 
@@ -103,8 +118,18 @@ library AddressUpgradeable {
      *
      * _Available since v3.1._
      */
-    function functionCallWithValue(address target, bytes memory data, uint256 value) internal returns (bytes memory) {
-        return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value
+    ) internal returns (bytes memory) {
+        return
+            functionCallWithValue(
+                target,
+                data,
+                value,
+                "Address: low-level call with value failed"
+            );
     }
 
     /**
@@ -113,12 +138,21 @@ library AddressUpgradeable {
      *
      * _Available since v3.1._
      */
-    function functionCallWithValue(address target, bytes memory data, uint256 value, string memory errorMessage) internal returns (bytes memory) {
-        require(address(this).balance >= value, "Address: insufficient balance for call");
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
+        require(
+            address(this).balance >= value,
+            "Address: insufficient balance for call"
+        );
         require(isContract(target), "Address: call to non-contract");
 
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, bytes memory returndata) = target.call{ value: value }(data);
+        (bool success, bytes memory returndata) =
+            target.call{value: value}(data);
         return _verifyCallResult(success, returndata, errorMessage);
     }
 
@@ -128,8 +162,17 @@ library AddressUpgradeable {
      *
      * _Available since v3.3._
      */
-    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
-        return functionStaticCall(target, data, "Address: low-level static call failed");
+    function functionStaticCall(address target, bytes memory data)
+        internal
+        view
+        returns (bytes memory)
+    {
+        return
+            functionStaticCall(
+                target,
+                data,
+                "Address: low-level static call failed"
+            );
     }
 
     /**
@@ -138,7 +181,11 @@ library AddressUpgradeable {
      *
      * _Available since v3.3._
      */
-    function functionStaticCall(address target, bytes memory data, string memory errorMessage) internal view returns (bytes memory) {
+    function functionStaticCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal view returns (bytes memory) {
         require(isContract(target), "Address: static call to non-contract");
 
         // solhint-disable-next-line avoid-low-level-calls
@@ -146,7 +193,11 @@ library AddressUpgradeable {
         return _verifyCallResult(success, returndata, errorMessage);
     }
 
-    function _verifyCallResult(bool success, bytes memory returndata, string memory errorMessage) private pure returns(bytes memory) {
+    function _verifyCallResult(
+        bool success,
+        bytes memory returndata,
+        string memory errorMessage
+    ) private pure returns (bytes memory) {
         if (success) {
             return returndata;
         } else {
@@ -173,7 +224,6 @@ library AddressUpgradeable {
 // solhint-disable-next-line compiler-version
 pragma solidity >=0.4.24 <0.8.0;
 
-
 /**
  * @dev This is a base contract to aid in writing upgradeable contracts, or any kind of contract that will be deployed
  * behind a proxy. Since a proxied contract can't have a constructor, it's common to move constructor logic to an
@@ -187,7 +237,6 @@ pragma solidity >=0.4.24 <0.8.0;
  * that all initializers are idempotent. This is not verified automatically as constructors are by Solidity.
  */
 abstract contract Initializable {
-
     /**
      * @dev Indicates that the contract has been initialized.
      */
@@ -202,7 +251,10 @@ abstract contract Initializable {
      * @dev Modifier to protect an initializer function from being invoked twice.
      */
     modifier initializer() {
-        require(_initializing || _isConstructor() || !_initialized, "Initializable: contract is already initialized");
+        require(
+            _initializing || _isConstructor() || !_initialized,
+            "Initializable: contract is already initialized"
+        );
 
         bool isTopLevelCall = !_initializing;
         if (isTopLevelCall) {
@@ -229,7 +281,6 @@ abstract contract Initializable {
 
 pragma solidity >=0.6.0 <0.8.0;
 
-
 /*
  * @dev Provides information about the current execution context, including the
  * sender of the transaction and its data. While these are generally available
@@ -245,8 +296,8 @@ abstract contract ContextUpgradeable is Initializable {
         __Context_init_unchained();
     }
 
-    function __Context_init_unchained() internal initializer {
-    }
+    function __Context_init_unchained() internal initializer {}
+
     function _msgSender() internal view virtual returns (address payable) {
         return msg.sender;
     }
@@ -255,6 +306,7 @@ abstract contract ContextUpgradeable is Initializable {
         this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
         return msg.data;
     }
+
     uint256[50] private __gap;
 }
 
@@ -285,7 +337,9 @@ interface IERC20Upgradeable {
      *
      * Emits a {Transfer} event.
      */
-    function transfer(address recipient, uint256 amount) external returns (bool);
+    function transfer(address recipient, uint256 amount)
+        external
+        returns (bool);
 
     /**
      * @dev Returns the remaining number of tokens that `spender` will be
@@ -294,7 +348,10 @@ interface IERC20Upgradeable {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender) external view returns (uint256);
+    function allowance(address owner, address spender)
+        external
+        view
+        returns (uint256);
 
     /**
      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -321,7 +378,11 @@ interface IERC20Upgradeable {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external returns (bool);
 
     /**
      * @dev Emitted when `value` tokens are moved from one account (`from`) to
@@ -335,7 +396,11 @@ interface IERC20Upgradeable {
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
      * a call to {approve}. `value` is the new allowance.
      */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 }
 
 // File: @openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol
@@ -363,7 +428,11 @@ library SafeMathUpgradeable {
      *
      * _Available since v3.4._
      */
-    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryAdd(uint256 a, uint256 b)
+        internal
+        pure
+        returns (bool, uint256)
+    {
         uint256 c = a + b;
         if (c < a) return (false, 0);
         return (true, c);
@@ -374,7 +443,11 @@ library SafeMathUpgradeable {
      *
      * _Available since v3.4._
      */
-    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function trySub(uint256 a, uint256 b)
+        internal
+        pure
+        returns (bool, uint256)
+    {
         if (b > a) return (false, 0);
         return (true, a - b);
     }
@@ -384,7 +457,11 @@ library SafeMathUpgradeable {
      *
      * _Available since v3.4._
      */
-    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryMul(uint256 a, uint256 b)
+        internal
+        pure
+        returns (bool, uint256)
+    {
         // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
         // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
@@ -399,7 +476,11 @@ library SafeMathUpgradeable {
      *
      * _Available since v3.4._
      */
-    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryDiv(uint256 a, uint256 b)
+        internal
+        pure
+        returns (bool, uint256)
+    {
         if (b == 0) return (false, 0);
         return (true, a / b);
     }
@@ -409,7 +490,11 @@ library SafeMathUpgradeable {
      *
      * _Available since v3.4._
      */
-    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryMod(uint256 a, uint256 b)
+        internal
+        pure
+        returns (bool, uint256)
+    {
         if (b == 0) return (false, 0);
         return (true, a % b);
     }
@@ -509,7 +594,11 @@ library SafeMathUpgradeable {
      *
      * - Subtraction cannot overflow.
      */
-    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+    function sub(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
         require(b <= a, errorMessage);
         return a - b;
     }
@@ -529,7 +618,11 @@ library SafeMathUpgradeable {
      *
      * - The divisor cannot be zero.
      */
-    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+    function div(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
         require(b > 0, errorMessage);
         return a / b;
     }
@@ -549,7 +642,11 @@ library SafeMathUpgradeable {
      *
      * - The divisor cannot be zero.
      */
-    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+    function mod(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
         require(b > 0, errorMessage);
         return a % b;
     }
@@ -560,10 +657,6 @@ library SafeMathUpgradeable {
 // SPDX-License-Identifier: MIT
 
 pragma solidity >=0.6.0 <0.8.0;
-
-
-
-
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -589,12 +682,16 @@ pragma solidity >=0.6.0 <0.8.0;
  * functions have been added to mitigate the well-known issues around setting
  * allowances. See {IERC20-approve}.
  */
-contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeable {
+contract ERC20Upgradeable is
+    Initializable,
+    ContextUpgradeable,
+    IERC20Upgradeable
+{
     using SafeMathUpgradeable for uint256;
 
-    mapping (address => uint256) private _balances;
+    mapping(address => uint256) private _balances;
 
-    mapping (address => mapping (address => uint256)) private _allowances;
+    mapping(address => mapping(address => uint256)) private _allowances;
 
     uint256 private _totalSupply;
 
@@ -611,12 +708,18 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
      * All three of these values are immutable: they can only be set once during
      * construction.
      */
-    function __ERC20_init(string memory name_, string memory symbol_) internal initializer {
+    function __ERC20_init(string memory name_, string memory symbol_)
+        internal
+        initializer
+    {
         __Context_init_unchained();
         __ERC20_init_unchained(name_, symbol_);
     }
 
-    function __ERC20_init_unchained(string memory name_, string memory symbol_) internal initializer {
+    function __ERC20_init_unchained(string memory name_, string memory symbol_)
+        internal
+        initializer
+    {
         _name = name_;
         _symbol = symbol_;
         _decimals = 18;
@@ -664,7 +767,13 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
     /**
      * @dev See {IERC20-balanceOf}.
      */
-    function balanceOf(address account) public view virtual override returns (uint256) {
+    function balanceOf(address account)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _balances[account];
     }
 
@@ -676,7 +785,12 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
      * - `recipient` cannot be the zero address.
      * - the caller must have a balance of at least `amount`.
      */
-    function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
+    function transfer(address recipient, uint256 amount)
+        public
+        virtual
+        override
+        returns (bool)
+    {
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
@@ -684,7 +798,13 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner, address spender) public view virtual override returns (uint256) {
+    function allowance(address owner, address spender)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _allowances[owner][spender];
     }
 
@@ -695,7 +815,12 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(address spender, uint256 amount) public virtual override returns (bool) {
+    function approve(address spender, uint256 amount)
+        public
+        virtual
+        override
+        returns (bool)
+    {
         _approve(_msgSender(), spender, amount);
         return true;
     }
@@ -713,9 +838,20 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
      * - the caller must have allowance for ``sender``'s tokens of at least
      * `amount`.
      */
-    function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) public virtual override returns (bool) {
         _transfer(sender, recipient, amount);
-        _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
+        _approve(
+            sender,
+            _msgSender(),
+            _allowances[sender][_msgSender()].sub(
+                amount,
+                "ERC20: transfer amount exceeds allowance"
+            )
+        );
         return true;
     }
 
@@ -731,8 +867,16 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
      *
      * - `spender` cannot be the zero address.
      */
-    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].add(addedValue));
+    function increaseAllowance(address spender, uint256 addedValue)
+        public
+        virtual
+        returns (bool)
+    {
+        _approve(
+            _msgSender(),
+            spender,
+            _allowances[_msgSender()][spender].add(addedValue)
+        );
         return true;
     }
 
@@ -750,8 +894,19 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
-    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
+    function decreaseAllowance(address spender, uint256 subtractedValue)
+        public
+        virtual
+        returns (bool)
+    {
+        _approve(
+            _msgSender(),
+            spender,
+            _allowances[_msgSender()][spender].sub(
+                subtractedValue,
+                "ERC20: decreased allowance below zero"
+            )
+        );
         return true;
     }
 
@@ -769,13 +924,20 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
      * - `recipient` cannot be the zero address.
      * - `sender` must have a balance of at least `amount`.
      */
-    function _transfer(address sender, address recipient, uint256 amount) internal virtual {
+    function _transfer(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) internal virtual {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
 
         _beforeTokenTransfer(sender, recipient, amount);
 
-        _balances[sender] = _balances[sender].sub(amount, "ERC20: transfer amount exceeds balance");
+        _balances[sender] = _balances[sender].sub(
+            amount,
+            "ERC20: transfer amount exceeds balance"
+        );
         _balances[recipient] = _balances[recipient].add(amount);
         emit Transfer(sender, recipient, amount);
     }
@@ -815,7 +977,10 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
 
         _beforeTokenTransfer(account, address(0), amount);
 
-        _balances[account] = _balances[account].sub(amount, "ERC20: burn amount exceeds balance");
+        _balances[account] = _balances[account].sub(
+            amount,
+            "ERC20: burn amount exceeds balance"
+        );
         _totalSupply = _totalSupply.sub(amount);
         emit Transfer(account, address(0), amount);
     }
@@ -833,7 +998,11 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
      * - `owner` cannot be the zero address.
      * - `spender` cannot be the zero address.
      */
-    function _approve(address owner, address spender, uint256 amount) internal virtual {
+    function _approve(
+        address owner,
+        address spender,
+        uint256 amount
+    ) internal virtual {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
 
@@ -866,7 +1035,12 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
      *
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual { }
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal virtual {}
+
     uint256[44] private __gap;
 }
 
@@ -875,7 +1049,6 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
 // SPDX-License-Identifier: MIT
 
 pragma solidity >=0.6.0 <0.8.0;
-
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where
@@ -892,7 +1065,10 @@ pragma solidity >=0.6.0 <0.8.0;
 abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
     address private _owner;
 
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
     /**
      * @dev Initializes the contract setting the deployer as the initial owner.
@@ -940,10 +1116,14 @@ abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
      * Can only be called by the current owner.
      */
     function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        require(
+            newOwner != address(0),
+            "Ownable: new owner is the zero address"
+        );
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
     }
+
     uint256[49] private __gap;
 }
 
@@ -952,8 +1132,6 @@ abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
 // SPDX-License-Identifier: MIT
 
 pragma solidity >=0.6.0 <0.8.0;
-
-
 
 /**
  * @dev Contract module which allows children to implement an emergency stop
@@ -1043,6 +1221,7 @@ abstract contract PausableUpgradeable is Initializable, ContextUpgradeable {
         _paused = false;
         emit Unpaused(_msgSender());
     }
+
     uint256[49] private __gap;
 }
 
@@ -1052,9 +1231,6 @@ abstract contract PausableUpgradeable is Initializable, ContextUpgradeable {
 
 pragma solidity >=0.6.0 <0.8.0;
 
-
-
-
 /**
  * @dev ERC20 token with pausable token transfers, minting and burning.
  *
@@ -1062,15 +1238,19 @@ pragma solidity >=0.6.0 <0.8.0;
  * period, or having an emergency switch for freezing all token transfers in the
  * event of a large bug.
  */
-abstract contract ERC20PausableUpgradeable is Initializable, ERC20Upgradeable, PausableUpgradeable {
+abstract contract ERC20PausableUpgradeable is
+    Initializable,
+    ERC20Upgradeable,
+    PausableUpgradeable
+{
     function __ERC20Pausable_init() internal initializer {
         __Context_init_unchained();
         __Pausable_init_unchained();
         __ERC20Pausable_init_unchained();
     }
 
-    function __ERC20Pausable_init_unchained() internal initializer {
-    }
+    function __ERC20Pausable_init_unchained() internal initializer {}
+
     /**
      * @dev See {ERC20-_beforeTokenTransfer}.
      *
@@ -1078,133 +1258,179 @@ abstract contract ERC20PausableUpgradeable is Initializable, ERC20Upgradeable, P
      *
      * - the contract must not be paused.
      */
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal virtual override {
         super._beforeTokenTransfer(from, to, amount);
 
         require(!paused(), "ERC20Pausable: token transfer while paused");
     }
+
     uint256[50] private __gap;
 }
 
 // File: contracts/pcntTokenVesting.sol
 
 pragma solidity 0.6.2;
+
 // SPDX-License-Identifier: MIT
 
+contract PlayToken is
+    Initializable,
+    OwnableUpgradeable,
+    ERC20PausableUpgradeable
+{
+    using SafeMathUpgradeable for uint256;
+    /**
+     * Category 0 - Team
+     * Category 1 - Operations
+     * Category 2 - Marketing/Partners
+     * Category 3 - Advisors
+     * Category 4 - Staking/Earn Incentives
+     * Category 5 - Play/Mining
+     * Category 6 - Reserve
+     * Category 7 - Seed Sale
+     * Category 8 - Private 1
+     * Category 9 - Private 2
+     */
+    struct VestingDetails {
+        uint8 vestingIndex;
+        uint256 vestingCliff;
+        uint256 vestingDuration;
+        uint256 tgePercent;
+        uint256 monthlyPercent;
+        uint256 totalAllocatedToken;
+    }
 
+    struct VestAccountDetails {
+        uint8 vestingIndex;
+        address walletAddress;
+        uint256 totalAmount;
+        uint256 startTime;
+        uint256 tgeTokens;
+        uint256 monthlyTokens;
+        uint256 vestingDuration;
+        uint256 vestingCliff;
+        uint256 totalAmountClaimed;
+        bool isVesting;
+        bool tgeTokensClaimed;
+    }
 
+    mapping(uint256 => VestingDetails) public vestCategory;
+    mapping(uint256 => uint256) public monthsToRates;
 
+    mapping(address => mapping(uint8 => VestAccountDetails))
+        public userToVestingDetails;
 
+    function initialize(address _PublicSaleAddress) public initializer {
+        __Ownable_init();
+        __ERC20_init("Playcent", "PCNT");
+        __ERC20Pausable_init();
+        _mint(owner(), 57600000 ether);
+        _mint(_PublicSaleAddress, 2400000 ether);
 
+        vestCategory[0] = VestingDetails(0, 12, 32, 0, 5 ether, 9000000 ether); // Team
+        vestCategory[1] = VestingDetails(1, 3, 13, 0, 10 ether, 4800000 ether); // Operations
+        vestCategory[2] = VestingDetails(2, 3, 13, 0, 10 ether, 4800000 ether); // Marketing/Partners
+        vestCategory[3] = VestingDetails(3, 1, 11, 0, 10 ether, 2400000 ether); // Advisors
+        vestCategory[4] = VestingDetails(4, 1, 10, 0, 10 ether, 4800000 ether); //Staking/Early Incentive Rewards
+        vestCategory[5] = VestingDetails(5, 3, 28, 0, 4 ether, 9000000 ether); //Play Mining
+        vestCategory[6] = VestingDetails(
+            6,
+            6,
+            30,
+            0,
+            4160000000000000000,
+            4200000 ether
+        ); //Reserve
+        // Sale Vesting Strategies
+        vestCategory[7] = VestingDetails(
+            7,
+            1,
+            7,
+            10 ether,
+            15 ether,
+            5700000 ether
+        ); // Seed Sale
+        vestCategory[8] = VestingDetails(
+            8,
+            1,
+            5,
+            15 ether,
+            20 ether,
+            5400000 ether
+        ); // Private Sale 1
+        vestCategory[9] = VestingDetails(
+            9,
+            1,
+            4,
+            20 ether,
+            20 ether,
+            5100000 ether
+        ); // Private Sale 2
 
+        // Private Sale 2 Rates
+        monthsToRates[1] = 20 ether;
+        monthsToRates[2] = 50 ether;
+        monthsToRates[3] = 80 ether;
+    }
 
-contract PlayToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradeable{
-	using SafeMathUpgradeable for uint;
-	/**
-	 * Category 0 - Team
-	 * Category 1 - Operations
-	 * Category 2 - Marketing/Partners
-	 * Category 3 - Advisors
-	 * Category 4 - Staking/Earn Incentives
-	 * Category 5 - Play/Mining
-	 * Category 6 - Reserve
-	 * Category 7 - Seed Sale
-	 * Category 8 - Private 1
-	 * Category 9 - Private 2
-	 */
-	struct VestingDetails{
-		uint8 vestingIndex;
-		uint vestingCliff;
-		uint vestingDuration;
-		uint tgePercent;
-		uint monthlyPercent;
-		uint totalAllocatedToken;
-	}
+    modifier onlyValidVestingBenifciary(
+        address _userAddresses,
+        uint8 _vestingIndex
+    ) {
+        require(
+            _vestingIndex >= 0 && _vestingIndex <= 9,
+            "Invalid Vesting Index"
+        );
+        require(_userAddresses != address(0), "Invalid Address");
+        require(
+            !userToVestingDetails[_userAddresses][_vestingIndex].isVesting,
+            "User Vesting Details Already Added to this Category"
+        );
+        _;
+    }
 
-	struct VestAccountDetails{
-		uint8 vestingIndex;
-		address walletAddress;
-		uint totalAmount;
-		uint startTime;
-		uint tgeTokens;
-		uint monthlyTokens;
-		uint vestingDuration;
-		uint vestingCliff;
-		uint totalAmountClaimed;
-		bool isVesting;
-		bool tgeTokensClaimed;
-	}
+    modifier checkValidVestingCategory(uint8 _index) {
+        require(_index >= 0 && _index <= 9, "Invalid Vesting Index");
+        _;
+    }
 
-	mapping (uint => VestingDetails) public vestCategory;
-	mapping (uint256 => uint256) public monthsToRates;
-	
-	mapping(address => mapping(uint8 => VestAccountDetails)) public userToVestingDetails;
-	
-	function initialize(address _PublicSaleAddress) initializer public{
-		__Ownable_init();
-        __ERC20_init('Playcent','PCNT');		
-		__ERC20Pausable_init();
-		_mint(owner(),57600000 ether);
-		_mint(_PublicSaleAddress,2400000 ether);
- 		
- 		vestCategory[0] = VestingDetails(0,12,32,0,5 ether,9000000 ether); // Team
-		vestCategory[1] = VestingDetails(1,3,13,0,10 ether,4800000 ether); // Operations
-		vestCategory[2] = VestingDetails(2,3,13,0,10 ether,4800000 ether); // Marketing/Partners
-		vestCategory[3] = VestingDetails(3,1,11,0,10 ether,2400000 ether); // Advisors
-		vestCategory[4] = VestingDetails(4,1,10,0,10 ether,4800000 ether); //Staking/Early Incentive Rewards
-		vestCategory[5] = VestingDetails(5,3,28,0,4 ether,9000000 ether); //Play Mining	
-		vestCategory[6] = VestingDetails(6,6,30,0,4160000000000000000,4200000 ether); //Reserve	
-		// Sale Vesting Strategies
-		vestCategory[7] = VestingDetails(7,1,7,10 ether,15 ether,5700000 ether); // Seed Sale
-		vestCategory[8] = VestingDetails(8,1,5,15 ether,20 ether,5400000 ether); // Private Sale 1
-		vestCategory[9] = VestingDetails(9,1,4,20 ether,20 ether,5100000 ether); // Private Sale 2
+    modifier checkVestingStatus(address _userAddresses, uint8 _vestingIndex) {
+        require(
+            userToVestingDetails[_userAddresses][_vestingIndex].isVesting,
+            "User NOT added to any Vesting Category"
+        );
+        _;
+    }
 
-		// Private Sale 2 Rates
-		monthsToRates[1] = 20 ether;
-		monthsToRates[2] = 50 ether;
-		monthsToRates[3] = 80 ether;
-	}
+    function getCurrentTime() public view returns (uint256) {
+        return block.timestamp;
+    }
 
-	modifier onlyValidVestingBenifciary(address _userAddresses,uint8 _vestingIndex) { 
-		require(_vestingIndex >= 0 && _vestingIndex <= 9,"Invalid Vesting Index");		  
-		require (_userAddresses != address(0),"Invalid Address");
-		require (!userToVestingDetails[_userAddresses][_vestingIndex].isVesting,"User Vesting Details Already Added to this Category");
-		_; 
-	}
+    function monthInSeconds() internal pure returns (uint256) {
+        return 2592000;
+    }
 
-	modifier checkValidVestingCategory(uint8 _index){ 
-		require(_index >= 0 && _index <= 9,"Invalid Vesting Index");
-		_; 
-	}
+    function daysInSeconds() internal pure returns (uint256) {
+        return 86400;
+    }
 
-	modifier checkVestingStatus(address _userAddresses,uint8 _vestingIndex){ 
-	 	require (userToVestingDetails[_userAddresses][_vestingIndex].isVesting,"User NOT added to any Vesting Category");
-		_; 
-	}
+    function getTgeTIME() public pure returns (uint256) {
+        return 1615746600; // March 15th
+    }
 
-	function getCurrentTime() public view returns(uint256){
-		return block.timestamp;
-	}	
-
-	function monthInSeconds() internal pure returns(uint256){		
-		return 2592000;
-	}
-	
-	function daysInSeconds() internal pure returns(uint256){		
-		return 86400;
-	}
-
-	function  getTgeTIME() public pure returns(uint256){
-		return 1615746600; // March 15th
-	}
-
-	function getTokenAmount(uint x, uint y, uint z) public pure returns (uint) {
+    function getTokenAmount(
+        uint256 x,
+        uint256 y,
+        uint256 z
+    ) public pure returns (uint256) {
         return x.mul(y).div(z);
     }
-    
-	
 
-	/**
+    /**
 	 * @notice - Allows only the Owner to ADD an array of Addresses as well as their Vesting Amount
 	 		   - The array of user and amounts should be passed along with the vestingCategory Index. 
 	 		   - Thus, a particular batch of addresses shall be added under only one Vesting Category Index 
@@ -1214,182 +1440,296 @@ contract PlayToken is Initializable,OwnableUpgradeable,ERC20PausableUpgradeable{
 	 * @return - true if Function executes successfully
 	 */
 
-	function addVestingDetails(address[] calldata _userAddresses, uint256[] calldata _vestingAmounts, uint8 _vestnigType) external onlyOwner returns(bool){
-		require(_userAddresses.length == _vestingAmounts.length,"Unequal arrays passed");
+    function addVestingDetails(
+        address[] calldata _userAddresses,
+        uint256[] calldata _vestingAmounts,
+        uint8 _vestnigType
+    ) external onlyOwner returns (bool) {
+        require(
+            _userAddresses.length == _vestingAmounts.length,
+            "Unequal arrays passed"
+        );
 
-		// Get Vesting Category Details
-		VestingDetails memory vestData = vestCategory[_vestnigType];
-		uint arrayLength = _userAddresses.length;
+        // Get Vesting Category Details
+        VestingDetails memory vestData = vestCategory[_vestnigType];
+        uint256 arrayLength = _userAddresses.length;
 
-		for(uint i= 0; i<arrayLength; i++){
-			uint8 vestingIndex = _vestnigType;
-			address user = _userAddresses[i];
-			uint256 amount = _vestingAmounts[i];
-			uint256 vestingCliff = vestData.vestingCliff;
-			uint256 vestingDuration = vestData.vestingDuration;
-			uint tgeAmount = getTokenAmount(_vestingAmounts[i], vestData.tgePercent, 100 ether);
-			uint monthlyAmount = getTokenAmount(_vestingAmounts[i], vestData.monthlyPercent, 100 ether);
+        for (uint256 i = 0; i < arrayLength; i++) {
+            uint8 vestingIndex = _vestnigType;
+            address user = _userAddresses[i];
+            uint256 amount = _vestingAmounts[i];
+            uint256 vestingCliff = vestData.vestingCliff;
+            uint256 vestingDuration = vestData.vestingDuration;
+            uint256 tgeAmount =
+                getTokenAmount(
+                    _vestingAmounts[i],
+                    vestData.tgePercent,
+                    100 ether
+                );
+            uint256 monthlyAmount =
+                getTokenAmount(
+                    _vestingAmounts[i],
+                    vestData.monthlyPercent,
+                    100 ether
+                );
 
-			addUserVestingDetails(user,vestingIndex,amount,vestingCliff,vestingDuration,tgeAmount,monthlyAmount);
-		}
-		return true;
-	}
+            addUserVestingDetails(
+                user,
+                vestingIndex,
+                amount,
+                vestingCliff,
+                vestingDuration,
+                tgeAmount,
+                monthlyAmount
+            );
+        }
+        return true;
+    }
 
+    /** @notice - Internal functions that is initializes the VestAccountDetails Struct with the respective arguments passed
+     * @param _userAddresses addresses of the User
+     * @param _totalAmount total amount to be lockedUp
+     * @param _vestingIndex denotes the type of vesting selected
+     * @param _vestingCliff denotes the cliff of the vesting category selcted
+     * @param _vestingDuration denotes the total duration of the vesting category selcted
+     * @param _tgeAmount denotes the total TGE amount to be transferred to the userVestingData
+     * @param _monthlyAmount denotes the total Monthly Amount to be transferred to the user
+     */
 
-	
-	/** @notice - Internal functions that is initializes the VestAccountDetails Struct with the respective arguments passed
-	 * @param _userAddresses addresses of the User
-	 * @param _totalAmount total amount to be lockedUp
-	 * @param _vestingIndex denotes the type of vesting selected
-	 * @param _vestingCliff denotes the cliff of the vesting category selcted
-	 * @param _vestingDuration denotes the total duration of the vesting category selcted
-	 * @param _tgeAmount denotes the total TGE amount to be transferred to the userVestingData
-	 * @param _monthlyAmount denotes the total Monthly Amount to be transferred to the user
-	 */
-	 
-	 
-	function addUserVestingDetails(address _userAddresses, uint8 _vestingIndex, uint256 _totalAmount, uint256 _vestingCliff, uint256 _vestingDuration,uint256 _tgeAmount,uint256 _monthlyAmount) onlyValidVestingBenifciary(_userAddresses,_vestingIndex) internal{	
-		VestAccountDetails memory userVestingData = VestAccountDetails(
-			_vestingIndex,
-			_userAddresses,
-			_totalAmount,
-			block.timestamp,
-			_tgeAmount,
-			_monthlyAmount,
-			_vestingDuration,
-			_vestingCliff,
-			0,
-			true,
-			false	
-		);
-		userToVestingDetails[_userAddresses][_vestingIndex] = userVestingData;
-	}
+    function addUserVestingDetails(
+        address _userAddresses,
+        uint8 _vestingIndex,
+        uint256 _totalAmount,
+        uint256 _vestingCliff,
+        uint256 _vestingDuration,
+        uint256 _tgeAmount,
+        uint256 _monthlyAmount
+    ) internal onlyValidVestingBenifciary(_userAddresses, _vestingIndex) {
+        VestAccountDetails memory userVestingData =
+            VestAccountDetails(
+                _vestingIndex,
+                _userAddresses,
+                _totalAmount,
+                block.timestamp,
+                _tgeAmount,
+                _monthlyAmount,
+                _vestingDuration,
+                _vestingCliff,
+                0,
+                true,
+                false
+            );
+        userToVestingDetails[_userAddresses][_vestingIndex] = userVestingData;
+    }
 
-	function calculatePrivateSaleTokens(address _userAddresses, uint8 _vestingIndex,uint256 _monthsElapsed) internal view returns(uint256){
-		VestAccountDetails memory vestData = userToVestingDetails[_userAddresses][_vestingIndex];
+    function calculatePrivateSaleTokens(
+        address _userAddresses,
+        uint8 _vestingIndex,
+        uint256 _monthsElapsed
+    ) internal view returns (uint256) {
+        VestAccountDetails memory vestData =
+            userToVestingDetails[_userAddresses][_vestingIndex];
 
-	 	uint256 totalClaimableAmount;
-	 	uint vestCliff = vestData.vestingCliff;
-	 	uint vestDuration = vestData.vestingDuration;
-	 	uint256 totalMonthsElapsed = _monthsElapsed;
+        uint256 totalClaimableAmount;
+        uint256 vestCliff = vestData.vestingCliff;
+        uint256 vestDuration = vestData.vestingDuration;
+        uint256 totalMonthsElapsed = _monthsElapsed;
 
-	 	require (totalMonthsElapsed > vestCliff,"Vesting Cliff Not Crossed Yet");
-	
-		if(totalMonthsElapsed > vestDuration){ // If total duration of Vesting already crossed
-	 		totalClaimableAmount = vestData.totalAmount.sub(vestData.totalAmountClaimed);
-	 	}else{ // if current time has crossed the Vesting Cliff but not the total Vesting Duration
-	 		uint actualMonthElapsed = totalMonthsElapsed.sub(vestCliff);
-	 		uint256 tokensAfterElapsedMonths = getTokenAmount(vestData.totalAmount,monthsToRates[actualMonthElapsed],100 ether);
-		 	require (tokensAfterElapsedMonths > vestData.totalAmountClaimed, "No Claimable Tokens at this Time");
-		 	totalClaimableAmount = tokensAfterElapsedMonths.sub(vestData.totalAmountClaimed);	 		
-	 		if(vestData.tgeTokensClaimed){
-				totalClaimableAmount = totalClaimableAmount.add(vestData.tgeTokens);
-			}
-	 	}
-	 	
-	 	return totalClaimableAmount;
-	}
-	
-  /**
-	 * @notice Calculates the amount of tokens to be transferred at any given point of time
-	 * @param _userAddresses address of the User  
-	 */
-	 function calculateClaimableTokens(address _userAddresses,uint8 _vestingIndex) public view checkVestingStatus(_userAddresses,_vestingIndex) returns(uint256){	 	
-	 	// Get Vesting Details
-	 	VestAccountDetails memory vestData = userToVestingDetails[_userAddresses][_vestingIndex];
-	 	
-	 	uint256 totalClaimableAmount;
-	 	uint256 vestStartTime = vestData.startTime;
-	 	uint256 currentTime = getCurrentTime();
-	 	uint vestCliff = vestData.vestingCliff;
-	 	uint vestDuration = vestData.vestingDuration;
-	 	
-	 	uint256 timeElapsed = currentTime.sub(vestStartTime);
-	 	uint256 totalMonthsElapsed = timeElapsed.div(monthInSeconds());
+        require(
+            totalMonthsElapsed > vestCliff,
+            "Vesting Cliff Not Crossed Yet"
+        );
 
-	 	if (vestData.vestingIndex == 9){
-	 		totalClaimableAmount = calculatePrivateSaleTokens(_userAddresses,_vestingIndex,totalMonthsElapsed);
-	 	}else{
-			require (totalMonthsElapsed > vestCliff,"Vesting Cliff Not Crossed Yet");
+        if (totalMonthsElapsed > vestDuration) {
+            // If total duration of Vesting already crossed
+            totalClaimableAmount = vestData.totalAmount.sub(
+                vestData.totalAmountClaimed
+            );
+        } else {
+            // if current time has crossed the Vesting Cliff but not the total Vesting Duration
+            uint256 actualMonthElapsed = totalMonthsElapsed.sub(vestCliff);
+            uint256 tokensAfterElapsedMonths =
+                getTokenAmount(
+                    vestData.totalAmount,
+                    monthsToRates[actualMonthElapsed],
+                    100 ether
+                );
+            require(
+                tokensAfterElapsedMonths > vestData.totalAmountClaimed,
+                "No Claimable Tokens at this Time"
+            );
+            totalClaimableAmount = tokensAfterElapsedMonths.sub(
+                vestData.totalAmountClaimed
+            );
+            if (vestData.tgeTokensClaimed) {
+                totalClaimableAmount = totalClaimableAmount.add(
+                    vestData.tgeTokens
+                );
+            }
+        }
 
-			if(totalMonthsElapsed > vestDuration){ // If total duration of Vesting already crossed
-		 		totalClaimableAmount = vestData.totalAmount.sub(vestData.totalAmountClaimed);
-		 	}else{ // if current time has crossed the Vesting Cliff but not the total Vesting Duration
-		 		// Calculating Actual Months(Excluding the CLIFF) to initiate vesting
-		 		uint actualMonthElapsed = totalMonthsElapsed.sub(vestCliff); 
-		 		require (actualMonthElapsed > 0,"Number of months elapsed is ZERO");
-		 		uint256 tokensAfterElapsedMonths = vestData.monthlyTokens.mul(actualMonthElapsed);
-		 		require (tokensAfterElapsedMonths > vestData.totalAmountClaimed, "No Claimable Tokens at this Time");
-		 		totalClaimableAmount = tokensAfterElapsedMonths.sub(vestData.totalAmountClaimed);	 		
-		 		if(vestData.tgeTokensClaimed){
-					totalClaimableAmount = totalClaimableAmount.add(vestData.tgeTokens);
-				}
-		 	}
-		 }
-	 	
-	 	return totalClaimableAmount;
+        return totalClaimableAmount;
+    }
 
-	 }
+    /**
+     * @notice Calculates the amount of tokens to be transferred at any given point of time
+     * @param _userAddresses address of the User
+     */
+    function calculateClaimableTokens(
+        address _userAddresses,
+        uint8 _vestingIndex
+    )
+        public
+        view
+        checkVestingStatus(_userAddresses, _vestingIndex)
+        returns (uint256)
+    {
+        // Get Vesting Details
+        VestAccountDetails memory vestData =
+            userToVestingDetails[_userAddresses][_vestingIndex];
 
-	/**
-	 * @notice An Internal Function to transfer tokens from this contract to the user
-	 * @param _beneficiary address of the User  
-	 * @param _amountOfTokens number of tokens to be transferred
-	 */
-	function _sendTokens(address _beneficiary, uint256 _amountOfTokens) internal returns(bool){
-		_transfer(address(this),_beneficiary,_amountOfTokens);
-		return true;
-	}
+        uint256 totalClaimableAmount;
+        uint256 vestStartTime = vestData.startTime;
+        uint256 currentTime = getCurrentTime();
+        uint256 vestCliff = vestData.vestingCliff;
+        uint256 vestDuration = vestData.vestingDuration;
 
-	/**
-	 * @notice Calculates and Transfer the total tokens to be transferred to the user after Token Generation Event is over
-	 * @dev The function shall only work for users under Sale Vesting Category(index - 7,8,9). 
-	 * @dev The function can only be called once by the user(only if the tgeTokensClaimed boolean value is FALSE). 
-	 * Once the tokens have been transferred, tgeTokensClaimed becomes TRUE for that particular address
-	 * @param _userAddresses address of the User  
-	 */
-	function  claimTGETokens(address _userAddresses,uint8 _vestingIndex) external checkVestingStatus(_userAddresses,_vestingIndex) returns(bool){
-		uint256 currentTime = getCurrentTime();
-		require (currentTime>getTgeTIME(), "Token Generation Event Not Started Yet");
-		// Get Vesting Details
-	 	VestAccountDetails memory vestData = userToVestingDetails[_userAddresses][_vestingIndex];
+        uint256 timeElapsed = currentTime.sub(vestStartTime);
+        uint256 totalMonthsElapsed = timeElapsed.div(monthInSeconds());
 
-	 	require (vestData.vestingIndex >= 7 && vestData.vestingIndex <= 9, "Vesting Category doesn't belong to SALE VEsting" );
-	 	require (vestData.tgeTokensClaimed == false, "TGE Tokens Have already been claimed for Given Address");
-	 	
-	 	uint256 tokensToTransfer = vestData.tgeTokens;
+        if (vestData.vestingIndex == 9) {
+            totalClaimableAmount = calculatePrivateSaleTokens(
+                _userAddresses,
+                _vestingIndex,
+                totalMonthsElapsed
+            );
+        } else {
+            require(
+                totalMonthsElapsed > vestCliff,
+                "Vesting Cliff Not Crossed Yet"
+            );
 
-	 	// Updating Contract State
-	 	vestData.totalAmountClaimed += tokensToTransfer;
-		vestData.tgeTokensClaimed = true;
-		userToVestingDetails[_userAddresses][_vestingIndex] = vestData;
-		_sendTokens(_userAddresses,tokensToTransfer);
-	}
-	
-	/**
-	 * @notice Calculates and Transfers the total tokens to be transferred to the user by calculating the Amount of tokens to be transferred at the given time
-	 * @dev The function shall only work for users under Vesting Category is valid(index - 1 to 9). 
-	 * @dev isVesting becomes false if all allocated tokens have been claimed.
-	 * @dev User cannot claim more tokens than actually allocated to them by the OWNER
-	 * @param _userAddresses address of the User  
-	 */
-	function claimVestTokens(address _userAddresses,uint8 _vestingIndex) external checkVestingStatus(_userAddresses,_vestingIndex) returns(bool){
-		// Get Vesting Details
-	 	VestAccountDetails memory vestData = userToVestingDetails[_userAddresses][_vestingIndex];
-		
-		// Get total token amount to be transferred
-		uint256 tokensToTransfer = calculateClaimableTokens(_userAddresses,_vestingIndex);
-		require (tokensToTransfer > 0,"No tokens to transfer");
-		uint256 contractTokenBalance = balanceOf(address(this));
-		require(contractTokenBalance > tokensToTransfer,"Not Enough Token Balance in Contract");
-		require(vestData.totalAmountClaimed.add(tokensToTransfer) <= vestData.totalAmount,"Cannot Claim more than Allocated");
-		
-		vestData.totalAmountClaimed += tokensToTransfer;
-		if(vestData.totalAmountClaimed == vestData.totalAmount){
-			vestData.isVesting = false;
-		}
-		userToVestingDetails[_userAddresses][_vestingIndex] = vestData;
-		_sendTokens(_userAddresses,tokensToTransfer);
-	}
-	
+            if (totalMonthsElapsed > vestDuration) {
+                // If total duration of Vesting already crossed
+                totalClaimableAmount = vestData.totalAmount.sub(
+                    vestData.totalAmountClaimed
+                );
+            } else {
+                // if current time has crossed the Vesting Cliff but not the total Vesting Duration
+                // Calculating Actual Months(Excluding the CLIFF) to initiate vesting
+                uint256 actualMonthElapsed = totalMonthsElapsed.sub(vestCliff);
+                require(
+                    actualMonthElapsed > 0,
+                    "Number of months elapsed is ZERO"
+                );
+                uint256 tokensAfterElapsedMonths =
+                    vestData.monthlyTokens.mul(actualMonthElapsed);
+                require(
+                    tokensAfterElapsedMonths > vestData.totalAmountClaimed,
+                    "No Claimable Tokens at this Time"
+                );
+                totalClaimableAmount = tokensAfterElapsedMonths.sub(
+                    vestData.totalAmountClaimed
+                );
+                if (vestData.tgeTokensClaimed) {
+                    totalClaimableAmount = totalClaimableAmount.add(
+                        vestData.tgeTokens
+                    );
+                }
+            }
+        }
+
+        return totalClaimableAmount;
+    }
+
+    /**
+     * @notice An Internal Function to transfer tokens from this contract to the user
+     * @param _beneficiary address of the User
+     * @param _amountOfTokens number of tokens to be transferred
+     */
+    function _sendTokens(address _beneficiary, uint256 _amountOfTokens)
+        internal
+        returns (bool)
+    {
+        _transfer(address(this), _beneficiary, _amountOfTokens);
+        return true;
+    }
+
+    /**
+     * @notice Calculates and Transfer the total tokens to be transferred to the user after Token Generation Event is over
+     * @dev The function shall only work for users under Sale Vesting Category(index - 7,8,9).
+     * @dev The function can only be called once by the user(only if the tgeTokensClaimed boolean value is FALSE).
+     * Once the tokens have been transferred, tgeTokensClaimed becomes TRUE for that particular address
+     * @param _userAddresses address of the User
+     */
+    function claimTGETokens(address _userAddresses, uint8 _vestingIndex)
+        external
+        checkVestingStatus(_userAddresses, _vestingIndex)
+        returns (bool)
+    {
+        uint256 currentTime = getCurrentTime();
+        require(
+            currentTime > getTgeTIME(),
+            "Token Generation Event Not Started Yet"
+        );
+        // Get Vesting Details
+        VestAccountDetails memory vestData =
+            userToVestingDetails[_userAddresses][_vestingIndex];
+
+        require(
+            vestData.vestingIndex >= 7 && vestData.vestingIndex <= 9,
+            "Vesting Category doesn't belong to SALE VEsting"
+        );
+        require(
+            vestData.tgeTokensClaimed == false,
+            "TGE Tokens Have already been claimed for Given Address"
+        );
+
+        uint256 tokensToTransfer = vestData.tgeTokens;
+
+        // Updating Contract State
+        vestData.totalAmountClaimed += tokensToTransfer;
+        vestData.tgeTokensClaimed = true;
+        userToVestingDetails[_userAddresses][_vestingIndex] = vestData;
+        _sendTokens(_userAddresses, tokensToTransfer);
+    }
+
+    /**
+     * @notice Calculates and Transfers the total tokens to be transferred to the user by calculating the Amount of tokens to be transferred at the given time
+     * @dev The function shall only work for users under Vesting Category is valid(index - 1 to 9).
+     * @dev isVesting becomes false if all allocated tokens have been claimed.
+     * @dev User cannot claim more tokens than actually allocated to them by the OWNER
+     * @param _userAddresses address of the User
+     */
+    function claimVestTokens(address _userAddresses, uint8 _vestingIndex)
+        external
+        checkVestingStatus(_userAddresses, _vestingIndex)
+        returns (bool)
+    {
+        // Get Vesting Details
+        VestAccountDetails memory vestData =
+            userToVestingDetails[_userAddresses][_vestingIndex];
+
+        // Get total token amount to be transferred
+        uint256 tokensToTransfer =
+            calculateClaimableTokens(_userAddresses, _vestingIndex);
+        require(tokensToTransfer > 0, "No tokens to transfer");
+        uint256 contractTokenBalance = balanceOf(address(this));
+        require(
+            contractTokenBalance > tokensToTransfer,
+            "Not Enough Token Balance in Contract"
+        );
+        require(
+            vestData.totalAmountClaimed.add(tokensToTransfer) <=
+                vestData.totalAmount,
+            "Cannot Claim more than Allocated"
+        );
+
+        vestData.totalAmountClaimed += tokensToTransfer;
+        if (vestData.totalAmountClaimed == vestData.totalAmount) {
+            vestData.isVesting = false;
+        }
+        userToVestingDetails[_userAddresses][_vestingIndex] = vestData;
+        _sendTokens(_userAddresses, tokensToTransfer);
+    }
 }
