@@ -7,11 +7,14 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
+import "./safety/ILocker.sol";
+
 
 contract PlaycentTokenV1 is
     Initializable,
     OwnableUpgradeable,
-    ERC20PausableUpgradeable
+    ERC20PausableUpgradeable,
+    ILockerUser
 {
     using SafeMathUpgradeable for uint256;
     /**
@@ -51,6 +54,8 @@ contract PlaycentTokenV1 is
     mapping(uint256 => VestType) public vestTypes;
     mapping(address => mapping(uint8 => VestAllocation))
         public walletToVestAllocations;
+
+    ILocker public override locker;
 
     function initialize(address _PublicSaleAddress) public initializer {
         __Ownable_init();
@@ -100,6 +105,32 @@ contract PlaycentTokenV1 is
         require (getCurrentTime() > getTgeTIME(), "Token Generation Event Not Started Yet");
         _; 
     }
+
+    function setLocker(address _locker) external onlyOwner() {
+        locker = ILocker(_locker);
+    }
+
+    function _transfer(address sender, address recipient, uint256 amount) internal virtual override {
+        require(sender != address(0), "ERC20: transfer from the zero address");
+        require(recipient != address(0), "ERC20: transfer to the zero address");
+        
+        // bot locking execution.
+        if (address(locker) != address(0)) {
+            locker.lockOrGetPenalty(sender, recipient);
+        }
+
+        // _tranfer function code 
+        _beforeTokenTransfer(sender, recipient, amount);
+
+        uint256 senderBalance = _balances[sender];
+        require(senderBalance >= amount, "ERC20: transfer amount exceeds balance");
+        _balances[sender] = senderBalance - amount;
+        _balances[recipient] += amount;
+
+        emit Transfer(sender, recipient, amount);
+    }
+
+
     function getCurrentTime() public view returns (uint256) {
         return block.timestamp;
     }
