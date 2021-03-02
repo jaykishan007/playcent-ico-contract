@@ -26,22 +26,22 @@ contract PlayToken is
      * Category 8 - Private 1
      * Category 9 - Private 2
      */
-    struct VestType {
+  struct VestType {
         uint8 indexId;
-        uint256 lockPeriod;
-        uint256 vestingDuration;
-        uint256 tgePercent;
-        uint256 monthlyPercent;
+        uint8 lockPeriod;
+        uint8 vestingDuration;
+        uint8 tgePercent;
+        uint8 monthlyPercent;
         uint256 totalTokenAllocation;
     }
 
-    struct VestAllocation {
+   struct VestAllocation {
         uint8 vestIndexID;
         uint256 totalTokensAllocated;
         uint256 totalTGETokens;
         uint256 monthlyTokens;
-        uint256 vestingDuration;
-        uint256 lockPeriod;
+        uint8 vestingDuration;
+        uint8 lockPeriod;
         uint256 totalVestTokensClaimed;
         bool isVesting;
         bool isTgeTokensClaimed;
@@ -152,8 +152,8 @@ contract PlayToken is
             uint8 vestIndexID = _vestnigType;
             address user = _userAddresses[i];
             uint256 amount = _vestingAmounts[i];
-            uint256 lockPeriod = vestData.lockPeriod;
-            uint256 vestingDuration = vestData.vestingDuration;
+            uint8 lockPeriod = vestData.lockPeriod;
+            uint8 vestingDuration = vestData.vestingDuration;
             uint256 tgeAmount =
                 getTokenAmount(_vestingAmounts[i], vestData.tgePercent, 100);
             uint256 monthlyAmount =
@@ -190,8 +190,8 @@ contract PlayToken is
         address _userAddresses,
         uint8 _vestingIndex,
         uint256 _totalAmount,
-        uint256 _vestingCliff,
-        uint256 _vestingDuration,
+        uint8 _vestingCliff,
+        uint8 _vestingDuration,
         uint256 _tgeAmount,
         uint256 _monthlyAmount
     ) internal onlyValidVestingBenifciary(_userAddresses, _vestingIndex) {
@@ -414,14 +414,12 @@ contract PlayToken is
 
     function claimVestTokens(uint8 _vestingIndex) external returns(bool){
             _claimVestTokens(msg.sender,_vestingIndex); 
-        
     }
 
     function pullRemainingTokens() onlyOwner external returns(bool){
         uint256 remainingTokens = balanceOf(address(this));
         _sendTokens(owner(),remainingTokens);   
     }
-    
-    
+        
 }
 
