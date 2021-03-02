@@ -108,19 +108,15 @@ contract PlaycentTokenV1 is
         return 2592000;
     }
 
-    function daysInSeconds() internal pure returns (uint256) {
-        return 86400;
-    }
-
     function getTgeTIME() public pure returns (uint256) {
         return 1615018379; // Sat Mar 06 2021 11:30:00 GMT+0000
     }
 
-    function getTokenAmount(
-        uint256 x,
-        uint256 y
+    function percentage(
+        uint256 _totalAmount,
+        uint256 _rate
     ) public pure returns (uint256) {
-        return x.mul(y).div(100);
+        return _totalAmount.mul(_rate).div(100);
     }
 
     /**
@@ -154,9 +150,9 @@ contract PlaycentTokenV1 is
             uint8 lockPeriod = vestData.lockPeriod;
             uint8 vestingDuration = vestData.vestingDuration;
             uint256 tgeAmount =
-                getTokenAmount(_vestingAmounts[i], vestData.tgePercent);
+                percentage(_vestingAmounts[i], vestData.tgePercent);
             uint256 monthlyAmount =
-                getTokenAmount(
+                percentage(
                     _vestingAmounts[i],
                     vestData.monthlyPercent
                 );
@@ -283,7 +279,7 @@ contract PlaycentTokenV1 is
                 monthsToRates[1] = 20;
                 monthsToRates[2] = 50;
                 monthsToRates[3] = 80;
-                tokensAfterElapsedMonths = getTokenAmount(
+                tokensAfterElapsedMonths = percentage(
                     vestData.totalTokensAllocated,
                     monthsToRates[actualMonthElapsed]
                 );
