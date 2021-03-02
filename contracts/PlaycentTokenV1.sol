@@ -115,18 +115,15 @@ contract PlaycentTokenV1 is
   //     return ERC20._transfer(sender, recipient, amount);
   // }
 
-  function transfer(address recipient, uint256 amount)
-    public
-    virtual
-    override
-    returns (bool)
-  {
+  function _transfer(
+    address sender,
+    address recipient,
+    uint256 amount
+  ) internal virtual override {
     if (address(locker) != address(0)) {
-      locker.lockOrGetPenalty(_msgSender(), recipient);
+      locker.lockOrGetPenalty(sender, recipient);
     }
-
-    _transfer(_msgSender(), recipient, amount);
-    return true;
+    return super._transfer(sender, recipient, amount);
   }
 
   function getCurrentTime() public view returns (uint256) {
