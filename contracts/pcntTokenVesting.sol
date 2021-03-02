@@ -257,8 +257,7 @@ contract PlayToken is
         uint256 currentTime = getCurrentTime();
         uint256 timeElapsed = currentTime.sub(vestStartTime);
         uint256 totalMonthsElapsed = timeElapsed.div(monthInSeconds());
-        uint256 _totalTokensClaimed =
-            totalTokensClaimed(_userAddresses, _vestingIndex);
+        
 
         //Check whether or not the VESTING CLIFF has been reached
         require(
@@ -268,6 +267,8 @@ contract PlayToken is
 
         // If total duration of Vesting already crossed, return pending tokens to claimed
         if (totalMonthsElapsed > vestData.vestingDuration) {
+            uint256 _totalTokensClaimed =
+            totalTokensClaimed(_userAddresses, _vestingIndex);
             actualClaimableAmount = vestData.totalTokensAllocated.sub(
                 _totalTokensClaimed
             );
