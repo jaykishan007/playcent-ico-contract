@@ -94,7 +94,7 @@ contract PlayToken is
     modifier checkVestingStatus(address _userAddresses, uint8 _vestingIndex) {
         require(
             walletToVestAllocations[_userAddresses][_vestingIndex].isVesting,
-            "User NOT added to any Vesting Category"
+            "User NOT added to Vesting Category"
         );
         _;
     }
@@ -145,14 +145,14 @@ contract PlayToken is
                - Thus, a particular batch of addresses shall be added under only one Vesting Category Index 
      * @param _userAddresses array of addresses of the Users
      * @param _vestingAmounts array of amounts to be vested
-     * @param _vestnigType allows the owner to select the type of vesting category
+     * @param _vestingType allows the owner to select the type of vesting category
      * @return - true if Function executes successfully
      */
 
     function addVestingDetails(
         address[] calldata _userAddresses,
         uint256[] calldata _vestingAmounts,
-        uint8 _vestnigType
+        uint8 _vestingType
     ) external onlyOwner returns (bool) {
         require(
             _userAddresses.length == _vestingAmounts.length,
@@ -160,11 +160,11 @@ contract PlayToken is
         );
 
         // Get Vesting Category Details
-        VestType memory vestData = vestTypes[_vestnigType];
+        VestType memory vestData = vestTypes[_vestingType];
         uint256 arrayLength = _userAddresses.length;
 
         for (uint256 i = 0; i < arrayLength; i++) {
-            uint8 vestIndexID = _vestnigType;
+            uint8 vestIndexID = _vestingType;
             address user = _userAddresses[i];
             uint256 amount = _vestingAmounts[i];
             uint256 lockPeriod = vestData.lockPeriod;
