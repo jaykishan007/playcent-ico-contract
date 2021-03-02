@@ -11,8 +11,7 @@ import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 contract PlayToken is
     Initializable,
     OwnableUpgradeable,
-    ERC20PausableUpgradeable,
-    ILockerUser
+    ERC20PausableUpgradeable
 {
     using SafeMathUpgradeable for uint256;
     /**
@@ -27,22 +26,22 @@ contract PlayToken is
      * Category 8 - Private 1
      * Category 9 - Private 2
      */
-    struct VestType {
+  struct VestType {
         uint8 indexId;
-        uint256 lockPeriod;
-        uint256 vestingDuration;
-        uint256 tgePercent;
-        uint256 monthlyPercent;
+        uint8 lockPeriod;
+        uint8 vestingDuration;
+        uint8 tgePercent;
+        uint8 monthlyPercent;
         uint256 totalTokenAllocation;
     }
 
-    struct VestAllocation {
+   struct VestAllocation {
         uint8 vestIndexID;
         uint256 totalTokensAllocated;
         uint256 totalTGETokens;
         uint256 monthlyTokens;
-        uint256 vestingDuration;
-        uint256 lockPeriod;
+        uint8 vestingDuration;
+        uint8 lockPeriod;
         uint256 totalVestTokensClaimed;
         bool isVesting;
         bool isTgeTokensClaimed;
@@ -52,8 +51,6 @@ contract PlayToken is
     mapping(uint256 => VestType) public vestTypes;
     mapping(address => mapping(uint8 => VestAllocation))
         public walletToVestAllocations;
-
-    ILocker public override locker;
 
     function initialize(address _PublicSaleAddress) public initializer {
         __Ownable_init();
@@ -94,7 +91,7 @@ contract PlayToken is
     modifier checkVestingStatus(address _userAddresses, uint8 _vestingIndex) {
         require(
             walletToVestAllocations[_userAddresses][_vestingIndex].isVesting,
-            "User NOT added to Vesting Category"
+            "User NOT added to any Vesting Category"
         );
         _;
     }
@@ -103,18 +100,6 @@ contract PlayToken is
         require (getCurrentTime() > getTgeTIME(), "Token Generation Event Not Started Yet");
         _; 
     }
-
-    function setLocker(address _locker) external onlyOwner() {
-        locker = ILocker(_locker);
-    }
-
-    function _transfer(address sender, address recipient, uint256 amount) internal virtual override {
-        if (address(locker) != address(0)) {
-            locker.lockOrGetPenalty(sender, recipient);
-        }
-        return ERC20._transfer(sender, recipient, amount);
-    }
-
     function getCurrentTime() public view returns (uint256) {
         return block.timestamp;
     }
@@ -145,14 +130,14 @@ contract PlayToken is
                - Thus, a particular batch of addresses shall be added under only one Vesting Category Index 
      * @param _userAddresses array of addresses of the Users
      * @param _vestingAmounts array of amounts to be vested
-     * @param _vestingType allows the owner to select the type of vesting category
+     * @param _vestnigType allows the owner to select the type of vesting category
      * @return - true if Function executes successfully
      */
 
     function addVestingDetails(
         address[] calldata _userAddresses,
         uint256[] calldata _vestingAmounts,
-        uint8 _vestingType
+        uint8 _vestnigType
     ) external onlyOwner returns (bool) {
         require(
             _userAddresses.length == _vestingAmounts.length,
@@ -160,28 +145,28 @@ contract PlayToken is
         );
 
         // Get Vesting Category Details
-        VestType memory vestData = vestTypes[_vestingType];
+        VestType memory vestData = vestTypes[_vestnigType];
         uint256 arrayLength = _userAddresses.length;
 
         for (uint256 i = 0; i < arrayLength; i++) {
-            uint8 vestIndexID = _vestingType;
-            address userAddress = _userAddresses[i];
-            uint256 totalVestTokens = _vestingAmounts[i];
-            uint256 lockPeriod = vestData.lockPeriod;
-            uint256 vestingDuration = vestData.vestingDuration;
+            uint8 vestIndexID = _vestnigType;
+            address user = _userAddresses[i];
+            uint256 amount = _vestingAmounts[i];
+            uint8 lockPeriod = vestData.lockPeriod;
+            uint8 vestingDuration = vestData.vestingDuration;
             uint256 tgeAmount =
-                getTokenAmount(totalVestTokens, vestData.tgePercent, 100);
+                getTokenAmount(_vestingAmounts[i], vestData.tgePercent, 100);
             uint256 monthlyAmount =
                 getTokenAmount(
-                    totalVestTokens,
+                    _vestingAmounts[i],
                     vestData.monthlyPercent,
                     100
                 );
 
             addUserVestingDetails(
-                userAddress,
+                user,
                 vestIndexID,
-                totalVestTokens,
+                amount,
                 lockPeriod,
                 vestingDuration,
                 tgeAmount,
@@ -193,9 +178,9 @@ contract PlayToken is
 
     /** @notice - Internal functions that is initializes the VestAllocation Struct with the respective arguments passed
      * @param _userAddresses addresses of the User
-     * @param _totalVestTokens total amount to be lockedUp
+     * @param _totalAmount total amount to be lockedUp
      * @param _vestingIndex denotes the type of vesting selected
-     * @param _lockPeriod denotes the lock of the vesting category selcted
+     * @param _vestingCliff denotes the cliff of the vesting category selcted
      * @param _vestingDuration denotes the total duration of the vesting category selcted
      * @param _tgeAmount denotes the total TGE amount to be transferred to the userVestingData
      * @param _monthlyAmount denotes the total Monthly Amount to be transferred to the user
@@ -204,20 +189,20 @@ contract PlayToken is
     function addUserVestingDetails(
         address _userAddresses,
         uint8 _vestingIndex,
-        uint256 _totalVestTokens,
-        uint256 _lockPeriod,
-        uint256 _vestingDuration,
+        uint256 _totalAmount,
+        uint8 _vestingCliff,
+        uint8 _vestingDuration,
         uint256 _tgeAmount,
         uint256 _monthlyAmount
     ) internal onlyValidVestingBenifciary(_userAddresses, _vestingIndex) {
         VestAllocation memory userVestingData =
             VestAllocation(
                 _vestingIndex,
-                _totalVestTokens,
+                _totalAmount,
                 _tgeAmount,
                 _monthlyAmount,
                 _vestingDuration,
-                _lockPeriod,
+                _vestingCliff,
                 0,
                 true,
                 false
@@ -429,14 +414,12 @@ contract PlayToken is
 
     function claimVestTokens(uint8 _vestingIndex) external returns(bool){
             _claimVestTokens(msg.sender,_vestingIndex); 
-        
     }
 
     function pullRemainingTokens() onlyOwner external returns(bool){
         uint256 remainingTokens = balanceOf(address(this));
         _sendTokens(owner(),remainingTokens);   
     }
-    
-    
+        
 }
 
