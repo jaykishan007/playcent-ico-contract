@@ -193,9 +193,9 @@ contract PlayToken is
 
     /** @notice - Internal functions that is initializes the VestAllocation Struct with the respective arguments passed
      * @param _userAddresses addresses of the User
-     * @param _totalAmount total amount to be lockedUp
+     * @param _totalVestTokens total amount to be lockedUp
      * @param _vestingIndex denotes the type of vesting selected
-     * @param _vestingCliff denotes the cliff of the vesting category selcted
+     * @param _lockPeriod denotes the lock of the vesting category selcted
      * @param _vestingDuration denotes the total duration of the vesting category selcted
      * @param _tgeAmount denotes the total TGE amount to be transferred to the userVestingData
      * @param _monthlyAmount denotes the total Monthly Amount to be transferred to the user
@@ -204,8 +204,8 @@ contract PlayToken is
     function addUserVestingDetails(
         address _userAddresses,
         uint8 _vestingIndex,
-        uint256 _totalAmount,
-        uint256 _vestingCliff,
+        uint256 _totalVestTokens,
+        uint256 _lockPeriod,
         uint256 _vestingDuration,
         uint256 _tgeAmount,
         uint256 _monthlyAmount
@@ -213,11 +213,11 @@ contract PlayToken is
         VestAllocation memory userVestingData =
             VestAllocation(
                 _vestingIndex,
-                _totalAmount,
+                _totalVestTokens,
                 _tgeAmount,
                 _monthlyAmount,
                 _vestingDuration,
-                _vestingCliff,
+                _lockPeriod,
                 0,
                 true,
                 false
