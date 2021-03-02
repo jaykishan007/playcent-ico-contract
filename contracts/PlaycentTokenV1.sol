@@ -8,7 +8,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 
-contract PlayToken is
+contract PlaycentTokenV1 is
     Initializable,
     OwnableUpgradeable,
     ERC20PausableUpgradeable
@@ -118,10 +118,9 @@ contract PlayToken is
 
     function getTokenAmount(
         uint256 x,
-        uint256 y,
-        uint256 z
+        uint256 y
     ) public pure returns (uint256) {
-        return x.mul(y).div(z);
+        return x.mul(y).div(100);
     }
 
     /**
@@ -155,12 +154,11 @@ contract PlayToken is
             uint8 lockPeriod = vestData.lockPeriod;
             uint8 vestingDuration = vestData.vestingDuration;
             uint256 tgeAmount =
-                getTokenAmount(_vestingAmounts[i], vestData.tgePercent, 100);
+                getTokenAmount(_vestingAmounts[i], vestData.tgePercent);
             uint256 monthlyAmount =
                 getTokenAmount(
                     _vestingAmounts[i],
-                    vestData.monthlyPercent,
-                    100
+                    vestData.monthlyPercent
                 );
 
             addUserVestingDetails(
@@ -287,8 +285,7 @@ contract PlayToken is
                 monthsToRates[3] = 80;
                 tokensAfterElapsedMonths = getTokenAmount(
                     vestData.totalTokensAllocated,
-                    monthsToRates[actualMonthElapsed],
-                    100
+                    monthsToRates[actualMonthElapsed]
                 );
             } else {
                 tokensAfterElapsedMonths = vestData.monthlyTokens.mul(
@@ -416,7 +413,7 @@ contract PlayToken is
             _claimVestTokens(msg.sender,_vestingIndex); 
     }
 
-    function pullRemainingTokens() onlyOwner external returns(bool){
+    function withdrawContractTokens() onlyOwner external returns(bool){
         uint256 remainingTokens = balanceOf(address(this));
         _sendTokens(owner(),remainingTokens);   
     }

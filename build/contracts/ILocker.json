@@ -1,0 +1,801 @@
+{
+  "contractName": "ILocker",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "source",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "dest",
+          "type": "address"
+        }
+      ],
+      "name": "lockOrGetPenalty",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.2+commit.bacdbe57\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"source\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"dest\",\"type\":\"address\"}],\"name\":\"lockOrGetPenalty\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"lockOrGetPenalty(address,address)\":{\"details\":\"Fails if transaction is not allowed. Otherwise returns the penalty. Returns a bool and a uint16, bool clarifying the penalty applied, and uint16 the penaltyOver1000\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/zaryab/blockchain_begins/all_about_ethereum/quillHash_CODES/bloqueLabs/gitPlaycent/ico-contract/contracts/safety/ILocker.sol\":\"ILocker\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/zaryab/blockchain_begins/all_about_ethereum/quillHash_CODES/bloqueLabs/gitPlaycent/ico-contract/contracts/safety/ILocker.sol\":{\"keccak256\":\"0x646b78c6b159582402e3b0cde4c5ea794163035cc866568e0c93e70897f32e84\",\"urls\":[\"bzz-raw://6581a8111b6ff7ab371c53e2b12c805aab4c8c08e938c528b50b015eb03b1c60\",\"dweb:/ipfs/QmU698wdrpGkkJ5Cvd41L3Vhb2CbR1aQEcmgmaPQNSBSqY\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity >=0.6.0 <0.8.0;\n\ninterface ILiquiditySyncer {\n  function syncLiquiditySupply(address pool) external;\n}\n\ninterface ILocker {\n  /**\n   * @dev Fails if transaction is not allowed. Otherwise returns the penalty.\n   * Returns a bool and a uint16, bool clarifying the penalty applied, and uint16 the penaltyOver1000\n   */\n  function lockOrGetPenalty(address source, address dest)\n    external\n    returns (bool, uint256);\n}\n\ninterface ILockerUser {\n  function locker() external view returns (ILocker);\n}\n",
+  "sourcePath": "/home/zaryab/blockchain_begins/all_about_ethereum/quillHash_CODES/bloqueLabs/gitPlaycent/ico-contract/contracts/safety/ILocker.sol",
+  "ast": {
+    "absolutePath": "/home/zaryab/blockchain_begins/all_about_ethereum/quillHash_CODES/bloqueLabs/gitPlaycent/ico-contract/contracts/safety/ILocker.sol",
+    "exportedSymbols": {
+      "ILiquiditySyncer": [
+        1020
+      ],
+      "ILocker": [
+        1032
+      ],
+      "ILockerUser": [
+        1038
+      ]
+    },
+    "id": 1039,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1014,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.6",
+          ".0",
+          "<",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:31:2"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1020,
+        "linearizedBaseContracts": [
+          1020
+        ],
+        "name": "ILiquiditySyncer",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "374a9465",
+            "id": 1019,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "syncLiquiditySupply",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1017,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1016,
+                  "name": "pool",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1019,
+                  "src": "93:12:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1015,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "93:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "92:14:2"
+            },
+            "returnParameters": {
+              "id": 1018,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "115:0:2"
+            },
+            "scope": 1020,
+            "src": "64:52:2",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1039,
+        "src": "33:85:2"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1032,
+        "linearizedBaseContracts": [
+          1032
+        ],
+        "name": "ILocker",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Fails if transaction is not allowed. Otherwise returns the penalty.\nReturns a bool and a uint16, bool clarifying the penalty applied, and uint16 the penaltyOver1000",
+            "functionSelector": "aa61a9dd",
+            "id": 1031,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "lockOrGetPenalty",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1025,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1022,
+                  "name": "source",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1031,
+                  "src": "360:14:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1021,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "360:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1024,
+                  "name": "dest",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1031,
+                  "src": "376:12:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1023,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "376:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "359:30:2"
+            },
+            "returnParameters": {
+              "id": 1030,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1027,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1031,
+                  "src": "416:4:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1026,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "416:4:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1029,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1031,
+                  "src": "422:7:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1028,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "422:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "415:15:2"
+            },
+            "scope": 1032,
+            "src": "334:97:2",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1039,
+        "src": "120:313:2"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1038,
+        "linearizedBaseContracts": [
+          1038
+        ],
+        "name": "ILockerUser",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "d7b96d4e",
+            "id": 1037,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "locker",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1033,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "476:2:2"
+            },
+            "returnParameters": {
+              "id": 1036,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1035,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1037,
+                  "src": "502:7:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_ILocker_$1032",
+                    "typeString": "contract ILocker"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 1034,
+                    "name": "ILocker",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 1032,
+                    "src": "502:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ILocker_$1032",
+                      "typeString": "contract ILocker"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "501:9:2"
+            },
+            "scope": 1038,
+            "src": "461:50:2",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1039,
+        "src": "435:78:2"
+      }
+    ],
+    "src": "0:514:2"
+  },
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "/home/zaryab/blockchain_begins/all_about_ethereum/quillHash_CODES/bloqueLabs/gitPlaycent/ico-contract/contracts/safety/ILocker.sol",
+      "exportedSymbols": {
+        "ILiquiditySyncer": [
+          1020
+        ],
+        "ILocker": [
+          1032
+        ],
+        "ILockerUser": [
+          1038
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            ">=",
+            "0.6",
+            ".0",
+            "<",
+            "0.8",
+            ".0"
+          ]
+        },
+        "id": 1014,
+        "name": "PragmaDirective",
+        "src": "0:31:2"
+      },
+      {
+        "attributes": {
+          "abstract": false,
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "interface",
+          "documentation": null,
+          "fullyImplemented": false,
+          "linearizedBaseContracts": [
+            1020
+          ],
+          "name": "ILiquiditySyncer",
+          "scope": 1039
+        },
+        "children": [
+          {
+            "attributes": {
+              "body": null,
+              "documentation": null,
+              "functionSelector": "374a9465",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "syncLiquiditySupply",
+              "overrides": null,
+              "scope": 1020,
+              "stateMutability": "nonpayable",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "pool",
+                      "overrides": null,
+                      "scope": 1019,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 1015,
+                        "name": "ElementaryTypeName",
+                        "src": "93:7:2"
+                      }
+                    ],
+                    "id": 1016,
+                    "name": "VariableDeclaration",
+                    "src": "93:12:2"
+                  }
+                ],
+                "id": 1017,
+                "name": "ParameterList",
+                "src": "92:14:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 1018,
+                "name": "ParameterList",
+                "src": "115:0:2"
+              }
+            ],
+            "id": 1019,
+            "name": "FunctionDefinition",
+            "src": "64:52:2"
+          }
+        ],
+        "id": 1020,
+        "name": "ContractDefinition",
+        "src": "33:85:2"
+      },
+      {
+        "attributes": {
+          "abstract": false,
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "interface",
+          "documentation": null,
+          "fullyImplemented": false,
+          "linearizedBaseContracts": [
+            1032
+          ],
+          "name": "ILocker",
+          "scope": 1039
+        },
+        "children": [
+          {
+            "attributes": {
+              "body": null,
+              "documentation": "@dev Fails if transaction is not allowed. Otherwise returns the penalty.\nReturns a bool and a uint16, bool clarifying the penalty applied, and uint16 the penaltyOver1000",
+              "functionSelector": "aa61a9dd",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "lockOrGetPenalty",
+              "overrides": null,
+              "scope": 1032,
+              "stateMutability": "nonpayable",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "source",
+                      "overrides": null,
+                      "scope": 1031,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 1021,
+                        "name": "ElementaryTypeName",
+                        "src": "360:7:2"
+                      }
+                    ],
+                    "id": 1022,
+                    "name": "VariableDeclaration",
+                    "src": "360:14:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "dest",
+                      "overrides": null,
+                      "scope": 1031,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 1023,
+                        "name": "ElementaryTypeName",
+                        "src": "376:7:2"
+                      }
+                    ],
+                    "id": 1024,
+                    "name": "VariableDeclaration",
+                    "src": "376:12:2"
+                  }
+                ],
+                "id": 1025,
+                "name": "ParameterList",
+                "src": "359:30:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1031,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bool",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bool",
+                          "type": "bool"
+                        },
+                        "id": 1026,
+                        "name": "ElementaryTypeName",
+                        "src": "416:4:2"
+                      }
+                    ],
+                    "id": 1027,
+                    "name": "VariableDeclaration",
+                    "src": "416:4:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1031,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1028,
+                        "name": "ElementaryTypeName",
+                        "src": "422:7:2"
+                      }
+                    ],
+                    "id": 1029,
+                    "name": "VariableDeclaration",
+                    "src": "422:7:2"
+                  }
+                ],
+                "id": 1030,
+                "name": "ParameterList",
+                "src": "415:15:2"
+              }
+            ],
+            "id": 1031,
+            "name": "FunctionDefinition",
+            "src": "334:97:2"
+          }
+        ],
+        "id": 1032,
+        "name": "ContractDefinition",
+        "src": "120:313:2"
+      },
+      {
+        "attributes": {
+          "abstract": false,
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "interface",
+          "documentation": null,
+          "fullyImplemented": false,
+          "linearizedBaseContracts": [
+            1038
+          ],
+          "name": "ILockerUser",
+          "scope": 1039
+        },
+        "children": [
+          {
+            "attributes": {
+              "body": null,
+              "documentation": null,
+              "functionSelector": "d7b96d4e",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "locker",
+              "overrides": null,
+              "scope": 1038,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 1033,
+                "name": "ParameterList",
+                "src": "476:2:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1037,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "contract ILocker",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "contractScope": null,
+                          "name": "ILocker",
+                          "referencedDeclaration": 1032,
+                          "type": "contract ILocker"
+                        },
+                        "id": 1034,
+                        "name": "UserDefinedTypeName",
+                        "src": "502:7:2"
+                      }
+                    ],
+                    "id": 1035,
+                    "name": "VariableDeclaration",
+                    "src": "502:7:2"
+                  }
+                ],
+                "id": 1036,
+                "name": "ParameterList",
+                "src": "501:9:2"
+              }
+            ],
+            "id": 1037,
+            "name": "FunctionDefinition",
+            "src": "461:50:2"
+          }
+        ],
+        "id": 1038,
+        "name": "ContractDefinition",
+        "src": "435:78:2"
+      }
+    ],
+    "id": 1039,
+    "name": "SourceUnit",
+    "src": "0:514:2"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.2+commit.bacdbe57.Linux.g++"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.3",
+  "updatedAt": "2021-03-02T15:43:25.526Z",
+  "devdoc": {
+    "methods": {
+      "lockOrGetPenalty(address,address)": {
+        "details": "Fails if transaction is not allowed. Otherwise returns the penalty. Returns a bool and a uint16, bool clarifying the penalty applied, and uint16 the penaltyOver1000"
+      }
+    }
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

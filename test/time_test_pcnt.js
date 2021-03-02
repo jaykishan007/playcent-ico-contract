@@ -1,4 +1,4 @@
-const PcntContract = artifacts.require("PlaycentToken");
+const PcntContract = artifacts.require("PlaycentTokenV1");
 
 var BN = require("bignumber.js");
 
