@@ -11,7 +11,8 @@ import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
 contract PlayToken is
     Initializable,
     OwnableUpgradeable,
-    ERC20PausableUpgradeable
+    ERC20PausableUpgradeable,
+    ILockerUser
 {
     using SafeMathUpgradeable for uint256;
     /**
@@ -51,6 +52,8 @@ contract PlayToken is
     mapping(uint256 => VestType) public vestTypes;
     mapping(address => mapping(uint8 => VestAllocation))
         public walletToVestAllocations;
+
+    ILocker public override locker;
 
     function initialize(address _PublicSaleAddress) public initializer {
         __Ownable_init();
@@ -100,6 +103,18 @@ contract PlayToken is
         require (getCurrentTime() > getTgeTIME(), "Token Generation Event Not Started Yet");
         _; 
     }
+
+    function setLocker(address _locker) external onlyOwner() {
+        locker = ILocker(_locker);
+    }
+
+    function _transfer(address sender, address recipient, uint256 amount) internal virtual override {
+        if (address(locker) != address(0)) {
+            locker.lockOrGetPenalty(sender, recipient);
+        }
+        return ERC20._transfer(sender, recipient, amount);
+    }
+
     function getCurrentTime() public view returns (uint256) {
         return block.timestamp;
     }
