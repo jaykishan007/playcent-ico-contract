@@ -47,8 +47,8 @@ contract PlayToken is
         bool isTgeTokensClaimed;
     }
 
-    mapping(uint256 => VestType) public vestTypes;
 
+    mapping(uint256 => VestType) public vestTypes;
     mapping(address => mapping(uint8 => VestAllocation))
         public walletToVestAllocations;
 
@@ -88,11 +88,6 @@ contract PlayToken is
         _;
     }
 
-    modifier checkValidVestingCategory(uint8 _index) {
-        require(_index >= 0 && _index <= 9, "Invalid Vesting Index");
-        _;
-    }
-
     modifier checkVestingStatus(address _userAddresses, uint8 _vestingIndex) {
         require(
             walletToVestAllocations[_userAddresses][_vestingIndex].isVesting,
@@ -101,6 +96,10 @@ contract PlayToken is
         _;
     }
 
+    modifier onlyAfterTGE(){ 
+        require (getCurrentTime() > getTgeTIME(), "Token Generation Event Not Started Yet");
+        _; 
+    }
     function getCurrentTime() public view returns (uint256) {
         return block.timestamp;
     }
@@ -251,11 +250,6 @@ contract PlayToken is
         VestAllocation memory vestData =
             walletToVestAllocations[_userAddresses][_vestingIndex];
 
-        uint256[4] memory monthsToRates;
-        monthsToRates[1] = 20;
-        monthsToRates[2] = 50;
-        monthsToRates[3] = 80;
-
         // Get Time Details
         uint256 actualClaimableAmount;
         uint256 tokensAfterElapsedMonths;
@@ -285,6 +279,11 @@ contract PlayToken is
             require(actualMonthElapsed > 0, "Number of months elapsed is ZERO");
             // Calculate the Total Tokens on the basis of Vesting Index and Month elapsed
             if (vestData.vestIndexID == 9) {
+
+                uint256[4] memory monthsToRates;
+                monthsToRates[1] = 20;
+                monthsToRates[2] = 50;
+                monthsToRates[3] = 80;
                 tokensAfterElapsedMonths = getTokenAmount(
                     vestData.totalTokensAllocated,
                     monthsToRates[actualMonthElapsed],
@@ -327,16 +326,12 @@ contract PlayToken is
      * Once the tokens have been transferred, isTgeTokensClaimed becomes TRUE for that particular address
      * @param _userAddresses address of the User
      */
-    function claimTGETokens(address _userAddresses, uint8 _vestingIndex)
-        external
+    function _claimTGETokens(address _userAddresses, uint8 _vestingIndex)
+        internal
+        onlyAfterTGE
         checkVestingStatus(_userAddresses, _vestingIndex)
         returns (bool)
     {
-        uint256 currentTime = getCurrentTime();
-        require(
-            currentTime > getTgeTIME(),
-            "Token Generation Event Not Started Yet"
-        );
         // Get Vesting Details
         VestAllocation memory vestData =
             walletToVestAllocations[_userAddresses][_vestingIndex];
@@ -358,6 +353,15 @@ contract PlayToken is
         _sendTokens(_userAddresses, tokensToTransfer);
     }
 
+    function claimTGETokensOnlyOwner(address _userAddresses,uint8 _vestingIndex) external onlyOwner returns(bool){
+            _claimTGETokens(_userAddresses,_vestingIndex);
+    }
+
+    function claimTGETokens(uint8 _vestingIndex) external returns(bool){
+            _claimTGETokens(msg.sender,_vestingIndex);  
+        
+    }
+
     /**
      * @notice Calculates and Transfers the total tokens to be transferred to the user by calculating the Amount of tokens to be transferred at the given time
      * @dev The function shall only work for users under Vesting Category is valid(index - 1 to 9).
@@ -365,8 +369,8 @@ contract PlayToken is
      * @dev User cannot claim more tokens than actually allocated to them by the OWNER
      * @param _userAddresses address of the User
      */
-    function claimVestTokens(address _userAddresses, uint8 _vestingIndex)
-        external
+    function _claimVestTokens(address _userAddresses, uint8 _vestingIndex)
+        internal
         checkVestingStatus(_userAddresses, _vestingIndex)
         returns (bool)
     {
@@ -402,4 +406,21 @@ contract PlayToken is
         walletToVestAllocations[_userAddresses][_vestingIndex] = vestData;
         _sendTokens(_userAddresses, tokensToTransfer);
     }
+
+    function claimVestTokensOnlyOwner(address _userAddresses,uint8 _vestingIndex) external onlyOwner returns(bool){
+            _claimVestTokens(_userAddresses,_vestingIndex);
+    }
+
+    function claimVestTokens(uint8 _vestingIndex) external returns(bool){
+            _claimVestTokens(msg.sender,_vestingIndex); 
+        
+    }
+
+    function pullRemainingTokens() onlyOwner external returns(bool){
+        uint256 remainingTokens = balanceOf(address(this));
+        _sendTokens(owner(),remainingTokens);   
+    }
+    
+    
 }
+
