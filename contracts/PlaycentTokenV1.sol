@@ -176,22 +176,22 @@ contract PlaycentTokenV1 is
 
         for (uint256 i = 0; i < arrayLength; i++) {
             uint8 vestIndexID = _vestnigType;
-            address user = _userAddresses[i];
-            uint256 amount = _vestingAmounts[i];
+            address userAddress = _userAddresses[i];
+            uint256 totalAllocation = _vestingAmounts[i];
             uint8 lockPeriod = vestData.lockPeriod;
             uint8 vestingDuration = vestData.vestingDuration;
             uint256 tgeAmount =
-                percentage(_vestingAmounts[i], vestData.tgePercent);
+                percentage(totalAllocation, vestData.tgePercent);
             uint256 monthlyAmount =
                 percentage(
-                    _vestingAmounts[i],
+                    totalAllocation,
                     vestData.monthlyPercent
                 );
 
             addUserVestingDetails(
-                user,
+                userAddress,
                 vestIndexID,
-                amount,
+                totalAllocation,
                 lockPeriod,
                 vestingDuration,
                 tgeAmount,
@@ -203,9 +203,9 @@ contract PlaycentTokenV1 is
 
     /** @notice - Internal functions that is initializes the VestAllocation Struct with the respective arguments passed
      * @param _userAddresses addresses of the User
-     * @param _totalAmount total amount to be lockedUp
+     * @param _totalAllocation total amount to be lockedUp
      * @param _vestingIndex denotes the type of vesting selected
-     * @param _vestingCliff denotes the cliff of the vesting category selcted
+     * @param _lockPeriod denotes the lock of the vesting category selcted
      * @param _vestingDuration denotes the total duration of the vesting category selcted
      * @param _tgeAmount denotes the total TGE amount to be transferred to the userVestingData
      * @param _monthlyAmount denotes the total Monthly Amount to be transferred to the user
@@ -214,8 +214,8 @@ contract PlaycentTokenV1 is
     function addUserVestingDetails(
         address _userAddresses,
         uint8 _vestingIndex,
-        uint256 _totalAmount,
-        uint8 _vestingCliff,
+        uint256 _totalAllocation,
+        uint8 _lockPeriod,
         uint8 _vestingDuration,
         uint256 _tgeAmount,
         uint256 _monthlyAmount
@@ -223,11 +223,11 @@ contract PlaycentTokenV1 is
         VestAllocation memory userVestingData =
             VestAllocation(
                 _vestingIndex,
-                _totalAmount,
+                _totalAllocation,
                 _tgeAmount,
                 _monthlyAmount,
                 _vestingDuration,
-                _vestingCliff,
+                _lockPeriod,
                 0,
                 true,
                 false
