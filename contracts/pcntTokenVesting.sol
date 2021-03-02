@@ -165,23 +165,23 @@ contract PlayToken is
 
         for (uint256 i = 0; i < arrayLength; i++) {
             uint8 vestIndexID = _vestingType;
-            address user = _userAddresses[i];
-            uint256 amount = _vestingAmounts[i];
+            address userAddress = _userAddresses[i];
+            uint256 totalVestTokens = _vestingAmounts[i];
             uint256 lockPeriod = vestData.lockPeriod;
             uint256 vestingDuration = vestData.vestingDuration;
             uint256 tgeAmount =
-                getTokenAmount(_vestingAmounts[i], vestData.tgePercent, 100);
+                getTokenAmount(totalVestTokens, vestData.tgePercent, 100);
             uint256 monthlyAmount =
                 getTokenAmount(
-                    _vestingAmounts[i],
+                    totalVestTokens,
                     vestData.monthlyPercent,
                     100
                 );
 
             addUserVestingDetails(
-                user,
+                userAddress,
                 vestIndexID,
-                amount,
+                totalVestTokens,
                 lockPeriod,
                 vestingDuration,
                 tgeAmount,
