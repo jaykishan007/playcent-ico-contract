@@ -26,32 +26,31 @@ contract PlayToken is
      * Category 8 - Private 1
      * Category 9 - Private 2
      */
-    struct VestingDetails {
-        uint8 vestingIndex;
-        uint256 vestingCliff;
+    struct VestType {
+        uint8 indexId;
+        uint256 lockPeriod;
         uint256 vestingDuration;
         uint256 tgePercent;
         uint256 monthlyPercent;
-        uint256 totalAllocatedToken;
+        uint256 totalTokenAllocation;
     }
 
-    struct VestAccountDetails {
-        uint8 vestingIndex;
-        address walletAddress;
+    struct VestAllocation {
+        uint8 vestIndexID;
         uint256 totalTokensAllocated;
-        uint256 tgeTokensAllocated;
+        uint256 totalTGETokens;
         uint256 monthlyTokens;
         uint256 vestingDuration;
-        uint256 vestingCliff;
-        uint256 totalVestingTokensClaimed;
+        uint256 lockPeriod;
+        uint256 totalVestTokensClaimed;
         bool isVesting;
         bool isTgeTokensClaimed;
     }
 
-    mapping(uint256 => VestingDetails) public vestCategory;
+    mapping(uint256 => VestType) public vestTypes;
 
-    mapping(address => mapping(uint8 => VestAccountDetails))
-        public userToVestingDetails;
+    mapping(address => mapping(uint8 => VestAllocation))
+        public walletToVestAllocations;
 
     function initialize(address _PublicSaleAddress) public initializer {
         __Ownable_init();
@@ -60,17 +59,17 @@ contract PlayToken is
         _mint(owner(), 57600000 ether);
         _mint(_PublicSaleAddress, 2400000 ether);
 
-        vestCategory[0] = VestingDetails(0, 12, 32, 0, 5, 9000000 ether); // Team
-        vestCategory[1] = VestingDetails(1, 3, 13, 0, 10, 4800000 ether); // Operations
-        vestCategory[2] = VestingDetails(2, 3, 13, 0, 10, 4800000 ether); // Marketing/Partners
-        vestCategory[3] = VestingDetails(3, 1, 11, 0, 10, 2400000 ether); // Advisors
-        vestCategory[4] = VestingDetails(4, 1, 10, 0, 10, 4800000 ether); //Staking/Early Incentive Rewards
-        vestCategory[5] = VestingDetails(5, 3, 28, 0, 4, 9000000 ether); //Play Mining
-        vestCategory[6] = VestingDetails(6, 6, 31, 0, 4, 4200000 ether); //Reserve
+        vestTypes[0] = VestType(0, 12, 32, 0, 5, 9000000 ether); // Team
+        vestTypes[1] = VestType(1, 3, 13, 0, 10, 4800000 ether); // Operations
+        vestTypes[2] = VestType(2, 3, 13, 0, 10, 4800000 ether); // Marketing/Partners
+        vestTypes[3] = VestType(3, 1, 11, 0, 10, 2400000 ether); // Advisors
+        vestTypes[4] = VestType(4, 1, 11, 0, 10, 4800000 ether); //Staking/Early Incentive Rewards
+        vestTypes[5] = VestType(5, 3, 28, 0, 4, 9000000 ether); //Play Mining
+        vestTypes[6] = VestType(6, 6, 31, 0, 4, 4200000 ether); //Reserve
         // Sale Vesting Strategies
-        vestCategory[7] = VestingDetails(7, 1, 7, 10, 15, 5700000 ether); // Seed Sale
-        vestCategory[8] = VestingDetails(8, 1, 5, 15, 20, 5400000 ether); // Private Sale 1
-        vestCategory[9] = VestingDetails(9, 1, 4, 20, 20, 5100000 ether); // Private Sale 2
+        vestTypes[7] = VestType(7, 1, 7, 10, 15, 5700000 ether); // Seed Sale
+        vestTypes[8] = VestType(8, 1, 5, 15, 20, 5400000 ether); // Private Sale 1
+        vestTypes[9] = VestType(9, 1, 4, 20, 20, 5100000 ether); // Private Sale 2
     }
 
     modifier onlyValidVestingBenifciary(
@@ -83,7 +82,7 @@ contract PlayToken is
         );
         require(_userAddresses != address(0), "Invalid Address");
         require(
-            !userToVestingDetails[_userAddresses][_vestingIndex].isVesting,
+            !walletToVestAllocations[_userAddresses][_vestingIndex].isVesting,
             "User Vesting Details Already Added to this Category"
         );
         _;
@@ -96,7 +95,7 @@ contract PlayToken is
 
     modifier checkVestingStatus(address _userAddresses, uint8 _vestingIndex) {
         require(
-            userToVestingDetails[_userAddresses][_vestingIndex].isVesting,
+            walletToVestAllocations[_userAddresses][_vestingIndex].isVesting,
             "User NOT added to any Vesting Category"
         );
         _;
@@ -147,14 +146,14 @@ contract PlayToken is
         );
 
         // Get Vesting Category Details
-        VestingDetails memory vestData = vestCategory[_vestnigType];
+        VestType memory vestData = vestTypes[_vestnigType];
         uint256 arrayLength = _userAddresses.length;
 
         for (uint256 i = 0; i < arrayLength; i++) {
-            uint8 vestingIndex = _vestnigType;
+            uint8 vestIndexID = _vestnigType;
             address user = _userAddresses[i];
             uint256 amount = _vestingAmounts[i];
-            uint256 vestingCliff = vestData.vestingCliff;
+            uint256 lockPeriod = vestData.lockPeriod;
             uint256 vestingDuration = vestData.vestingDuration;
             uint256 tgeAmount =
                 getTokenAmount(_vestingAmounts[i], vestData.tgePercent, 100);
@@ -167,9 +166,9 @@ contract PlayToken is
 
             addUserVestingDetails(
                 user,
-                vestingIndex,
+                vestIndexID,
                 amount,
-                vestingCliff,
+                lockPeriod,
                 vestingDuration,
                 tgeAmount,
                 monthlyAmount
@@ -178,7 +177,7 @@ contract PlayToken is
         return true;
     }
 
-    /** @notice - Internal functions that is initializes the VestAccountDetails Struct with the respective arguments passed
+    /** @notice - Internal functions that is initializes the VestAllocation Struct with the respective arguments passed
      * @param _userAddresses addresses of the User
      * @param _totalAmount total amount to be lockedUp
      * @param _vestingIndex denotes the type of vesting selected
@@ -197,10 +196,9 @@ contract PlayToken is
         uint256 _tgeAmount,
         uint256 _monthlyAmount
     ) internal onlyValidVestingBenifciary(_userAddresses, _vestingIndex) {
-        VestAccountDetails memory userVestingData =
-            VestAccountDetails(
+        VestAllocation memory userVestingData =
+            VestAllocation(
                 _vestingIndex,
-                _userAddresses,
                 _totalAmount,
                 _tgeAmount,
                 _monthlyAmount,
@@ -210,7 +208,7 @@ contract PlayToken is
                 true,
                 false
             );
-        userToVestingDetails[_userAddresses][_vestingIndex] = userVestingData;
+        walletToVestAllocations[_userAddresses][_vestingIndex] = userVestingData;
     }
 
     function totalTokensClaimed(address _userAddresses, uint8 _vestingIndex)
@@ -220,16 +218,16 @@ contract PlayToken is
     {
         // Get Vesting Details
         uint256 totalClaimedTokens;
-        VestAccountDetails memory vestData =
-            userToVestingDetails[_userAddresses][_vestingIndex];
+        VestAllocation memory vestData =
+            walletToVestAllocations[_userAddresses][_vestingIndex];
 
         totalClaimedTokens = totalClaimedTokens.add(
-            vestData.totalVestingTokensClaimed
+            vestData.totalVestTokensClaimed
         );
 
         if (vestData.isTgeTokensClaimed) {
             totalClaimedTokens = totalClaimedTokens.add(
-                vestData.tgeTokensAllocated
+                vestData.totalTGETokens
             );
         }
 
@@ -250,8 +248,8 @@ contract PlayToken is
         returns (uint256)
     {
         // Get Vesting Details
-        VestAccountDetails memory vestData =
-            userToVestingDetails[_userAddresses][_vestingIndex];
+        VestAllocation memory vestData =
+            walletToVestAllocations[_userAddresses][_vestingIndex];
 
         uint256[4] memory monthsToRates;
         monthsToRates[1] = 20;
@@ -270,7 +268,7 @@ contract PlayToken is
 
         //Check whether or not the VESTING CLIFF has been reached
         require(
-            totalMonthsElapsed > vestData.vestingCliff,
+            totalMonthsElapsed > vestData.lockPeriod,
             "Vesting Cliff Not Crossed Yet"
         );
 
@@ -283,10 +281,10 @@ contract PlayToken is
             // Calculating Actual Months(Excluding the CLIFF) to initiate vesting
         } else {
             uint256 actualMonthElapsed =
-                totalMonthsElapsed.sub(vestData.vestingCliff);
+                totalMonthsElapsed.sub(vestData.lockPeriod);
             require(actualMonthElapsed > 0, "Number of months elapsed is ZERO");
             // Calculate the Total Tokens on the basis of Vesting Index and Month elapsed
-            if (vestData.vestingIndex == 9) {
+            if (vestData.vestIndexID == 9) {
                 tokensAfterElapsedMonths = getTokenAmount(
                     vestData.totalTokensAllocated,
                     monthsToRates[actualMonthElapsed],
@@ -298,12 +296,12 @@ contract PlayToken is
                 );
             }
             require(
-                tokensAfterElapsedMonths > vestData.totalVestingTokensClaimed,
+                tokensAfterElapsedMonths > vestData.totalVestTokensClaimed,
                 "No Claimable Tokens at this Time"
             );
             // Get the actual Claimable Tokens
             actualClaimableAmount = tokensAfterElapsedMonths.sub(
-                vestData.totalVestingTokensClaimed
+                vestData.totalVestTokensClaimed
             );
         }
         return actualClaimableAmount;
@@ -340,11 +338,11 @@ contract PlayToken is
             "Token Generation Event Not Started Yet"
         );
         // Get Vesting Details
-        VestAccountDetails memory vestData =
-            userToVestingDetails[_userAddresses][_vestingIndex];
+        VestAllocation memory vestData =
+            walletToVestAllocations[_userAddresses][_vestingIndex];
 
         require(
-            vestData.vestingIndex >= 7 && vestData.vestingIndex <= 9,
+            vestData.vestIndexID >= 7 && vestData.vestIndexID <= 9,
             "Vesting Category doesn't belong to SALE VEsting"
         );
         require(
@@ -352,11 +350,11 @@ contract PlayToken is
             "TGE Tokens Have already been claimed for Given Address"
         );
 
-        uint256 tokensToTransfer = vestData.tgeTokensAllocated;
+        uint256 tokensToTransfer = vestData.totalTGETokens;
 
         // Updating Contract State
         vestData.isTgeTokensClaimed = true;
-        userToVestingDetails[_userAddresses][_vestingIndex] = vestData;
+        walletToVestAllocations[_userAddresses][_vestingIndex] = vestData;
         _sendTokens(_userAddresses, tokensToTransfer);
     }
 
@@ -373,8 +371,8 @@ contract PlayToken is
         returns (bool)
     {
         // Get Vesting Details
-        VestAccountDetails memory vestData =
-            userToVestingDetails[_userAddresses][_vestingIndex];
+        VestAllocation memory vestData =
+            walletToVestAllocations[_userAddresses][_vestingIndex];
 
         // Get total token amount to be transferred
         uint256 _totalTokensClaimed =
@@ -394,14 +392,14 @@ contract PlayToken is
             "Cannot Claim more than Allocated"
         );
 
-        vestData.totalVestingTokensClaimed += tokensToTransfer;
+        vestData.totalVestTokensClaimed += tokensToTransfer;
         if (
             _totalTokensClaimed.add(tokensToTransfer) ==
             vestData.totalTokensAllocated
         ) {
             vestData.isVesting = false;
         }
-        userToVestingDetails[_userAddresses][_vestingIndex] = vestData;
+        walletToVestAllocations[_userAddresses][_vestingIndex] = vestData;
         _sendTokens(_userAddresses, tokensToTransfer);
     }
 }
