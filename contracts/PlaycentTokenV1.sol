@@ -66,7 +66,7 @@ contract PlaycentTokenV1 is
     vestTypes[1] = VestType(1, 3, 13, 0, 10, 4800000 ether); // Operations
     vestTypes[2] = VestType(2, 3, 13, 0, 10, 4800000 ether); // Marketing/Partners
     vestTypes[3] = VestType(3, 1, 11, 0, 10, 2400000 ether); // Advisors
-    vestTypes[4] = VestType(4, 1, 11, 0, 10, 4800000 ether); //Staking/Early Incentive Rewards
+    vestTypes[4] = VestType(4, 1, 6, 0, 20, 4800000 ether); //Staking/Early Incentive Rewards
     vestTypes[5] = VestType(5, 3, 28, 0, 4, 9000000 ether); //Play Mining
     vestTypes[6] = VestType(6, 6, 31, 0, 4, 4200000 ether); //Reserve
     // Sale Vesting Strategies
