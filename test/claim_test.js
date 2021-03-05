@@ -96,7 +96,7 @@ contract("TokenSale Contract", (accounts) => {
   // USER 4, 5, 6 - trying to claim before LOCK PERIOD
   it("User 4 should not be able to claim amount before Cliff", async () => {
     try {
-      await tokenInstance.calculateClaimableTokens(accounts[4], 7);
+      await tokenInstance.calculateClaimableVestTokens(accounts[4], 7);
     } catch (error) {
       const invalidOpcode = error.message.search("revert") >= 0;
       console.log(error.message);
@@ -106,7 +106,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 5 should not be able to claim amount before Cliff", async () => {
     try {
-      await tokenInstance.calculateClaimableTokens(accounts[5], 8);
+      await tokenInstance.calculateClaimableVestTokens(accounts[5], 8);
     } catch (error) {
       const invalidOpcode = error.message.search("revert") >= 0;
       console.log(error.message);
@@ -116,7 +116,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 6 should not be able to claim amount before Cliff", async () => {
     try {
-      await tokenInstance.calculateClaimableTokens(accounts[6], 9);
+      await tokenInstance.calculateClaimableVestTokens(accounts[6], 9);
     } catch (error) {
       const invalidOpcode = error.message.search("revert") >= 0;
       console.log(error.message);
@@ -131,7 +131,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 4 should not be able to claim amount before Cliff", async () => {
     try {
-      await tokenInstance.calculateClaimableTokens(accounts[4], 7);
+      await tokenInstance.calculateClaimableVestTokens(accounts[4], 7);
     } catch (error) {
       const invalidOpcode = error.message.search("revert") >= 0;
       console.log(error.message);
@@ -141,7 +141,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 6 should not be able to claim amount after 35 Days", async () => {
     const user6_claims = ether("400");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[6],
       9
     );
@@ -193,7 +193,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 5 should not be able to claim amount after 35 Days", async () => {
     const user5_claims = ether("400");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[5],
       8
     );
@@ -210,7 +210,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 4 should not be able to claim amount after 65 Days", async () => {
     const user5_claims = ether("600");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[4],
       7
     );
@@ -223,7 +223,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 6 should not be able to claim amount after 65 Days", async () => {
     const user6_claims = ether("600");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[6],
       9
     );
@@ -275,7 +275,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 5 should not be able to claim amount after 65 Days", async () => {
     const user5_claims = ether("800");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[5],
       8
     );
@@ -292,7 +292,7 @@ contract("TokenSale Contract", (accounts) => {
   });
   it("User 4 should not be able to claim amount after 95 Days", async () => {
     const user5_claims = ether("900");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[4],
       7
     );
@@ -305,7 +305,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 6 should not be able to claim amount after 95 Days", async () => {
     const user6_claims = ether("1000");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[6],
       9
     );
@@ -317,7 +317,7 @@ contract("TokenSale Contract", (accounts) => {
   });
   it("User 5 should not be able to claim amount after 95 Days", async () => {
     const user5_claims = ether("1200");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[5],
       8
     );
@@ -335,7 +335,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 4 should not be able to claim amount after 125 Days", async () => {
     const user5_claims = ether("1200");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[4],
       7
     );
@@ -348,7 +348,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 6 should not be able to claim amount after 125 Days", async () => {
     const user6_claims = ether("1400");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[6],
       9
     );
@@ -400,7 +400,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 5 should not be able to claim amount after 125 Days", async () => {
     const user5_claims = ether("1600");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[5],
       8
     );
@@ -418,7 +418,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 4 should not be able to claim amount after 155 Days", async () => {
     const user5_claims = ether("1500");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[4],
       7
     );
@@ -431,7 +431,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 5 should not be able to claim amount after 155 Days", async () => {
     const user5_claims = ether("2000");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[5],
       8
     );
@@ -449,7 +449,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 4 should not be able to claim amount after 185 Days", async () => {
     const user5_claims = ether("1800");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[4],
       7
     );
@@ -467,7 +467,7 @@ contract("TokenSale Contract", (accounts) => {
 
   it("User 4 should not be able to claim amount after 215 Days", async () => {
     const user5_claims = ether("2000");
-    const actualClaims = await tokenInstance.calculateClaimableTokens(
+    const actualClaims = await tokenInstance.calculateClaimableVestTokens(
       accounts[4],
       7
     );
