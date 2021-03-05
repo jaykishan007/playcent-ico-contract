@@ -58,13 +58,16 @@ contract PlaycentTokenV1 is
 
   ILocker public override locker;
 
-  function initialize(address _PublicSaleAddress,string memory _hash) public initializer {
+  function initialize(address _PublicSaleAddress, string memory _hash)
+    public
+    initializer
+  {
     __Ownable_init();
     __ERC20_init("Playcent", "PCNT");
     __ERC20Pausable_init();
     _mint(owner(), 57600000 ether);
     _mint(_PublicSaleAddress, 2400000 ether);
-    
+
     releaseSHA = _hash;
 
     vestTypes[0] = VestType(0, 12, 32, 0, 5, 9000000 ether); // Team
@@ -135,24 +138,21 @@ contract PlaycentTokenV1 is
     return super._transfer(sender, recipient, amount);
   }
 
-
- /**
+  /**
    * @notice Returns current time
    */
   function getCurrentTime() internal view returns (uint256) {
     return block.timestamp;
   }
 
-
- /**
+  /**
    * @notice Returns the total number of seconds in 1 Day
    */
-  function  daysInSeconds() internal pure returns(uint256){
+  function daysInSeconds() internal pure returns (uint256) {
     return 86400;
   }
-  
 
- /**
+  /**
    * @notice Returns the total number of seconds in 1 month
    */
   function monthInSeconds() internal pure returns (uint256) {
@@ -165,6 +165,7 @@ contract PlaycentTokenV1 is
   function getTGETime() public pure returns (uint256) {
     return 1615018379; // Sat Mar 06 2021 11:30:00 GMT+0000
   }
+
   /**
    * @notice Calculates the amount of tokens on the basis of monthly rate assigned
    */
@@ -180,28 +181,27 @@ contract PlaycentTokenV1 is
    * @notice Pauses the contract.
    * @dev Can only be called by the owner
    */
-  function pauseContract() external onlyOwner{
+  function pauseContract() external onlyOwner {
     _pause();
   }
 
-/**
+  /**
    * @notice Pauses the contract.
    * @dev Can only be called by the owner
    */
-  function unPauseContract() external onlyOwner{
-      _unpause();
+  function unPauseContract() external onlyOwner {
+    _unpause();
   }
 
-
   /**
-     * @notice - Allows only the Owner to ADD an array of Addresses as well as their Vesting Amount
-               - The array of user and amounts should be passed along with the vestingCategory Index. 
-               - Thus, a particular batch of addresses shall be added under only one Vesting Category Index 
-     * @param _userAddresses array of addresses of the Users
-     * @param _vestingAmounts array of amounts to be vested
-     * @param _vestingType allows the owner to select the type of vesting category
-     * @return - true if Function executes successfully
-     */
+    * @notice - Allows only the Owner to ADD an array of Addresses as well as their Vesting Amount
+              - The array of user and amounts should be passed along with the vestingCategory Index. 
+              - Thus, a particular batch of addresses shall be added under only one Vesting Category Index 
+    * @param _userAddresses array of addresses of the Users
+    * @param _vestingAmounts array of amounts to be vested
+    * @param _vestingType allows the owner to select the type of vesting category
+    * @return - true if Function executes successfully
+    */
 
   function addVestingDetails(
     address[] calldata _userAddresses,
@@ -305,8 +305,8 @@ contract PlaycentTokenV1 is
    * @param _userAddresses address of the User
    * @param _vestingIndex index number of the vesting type
    */
- 
-function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
+
+  function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
     public
     view
     checkVestingStatus(_userAddresses, _vestingIndex)
@@ -328,9 +328,9 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
     uint256 totalDaysElapsed = timeElapsed.div(daysInSeconds());
     uint256 partialDaysElapsed = totalDaysElapsed.mod(30);
 
-    if(partialDaysElapsed > 0 && totalMonthsElapsed >0){
-        totalMonthsElapsed += 1;
-      }
+    if (partialDaysElapsed > 0 && totalMonthsElapsed > 0) {
+      totalMonthsElapsed += 1;
+    }
 
     //Check whether or not the VESTING CLIFF has been reached
     require(
@@ -348,7 +348,7 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
       // if current time has crossed the Vesting Cliff but not the total Vesting Duration
       // Calculating Actual Months(Excluding the CLIFF) to initiate vesting
     } else {
-       uint256 actualMonthElapsed = totalMonthsElapsed.sub(vestData.lockPeriod);
+      uint256 actualMonthElapsed = totalMonthsElapsed.sub(vestData.lockPeriod);
       require(actualMonthElapsed > 0, "Number of months elapsed is ZERO");
       // Calculate the Total Tokens on the basis of Vesting Index and Month elapsed
       if (vestData.vestIndexID == 9) {
@@ -376,6 +376,7 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
     }
     return actualClaimableAmount;
   }
+
   /**
    * @notice Function to transfer tokens from this contract to the user
    * @param _beneficiary address of the User
@@ -425,7 +426,6 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
     _sendTokens(_userAddresses, tokensToTransfer);
   }
 
-
   /**
    * @notice Calculates and Transfers the total tokens to be transferred to the user by calculating the Amount of tokens to be transferred at the given time
    * @dev The function shall only work for users under Vesting Category is valid(index - 1 to 9).
@@ -435,8 +435,13 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
    * @param _vestingIndex index of the vesting Type
    * @param _tokenAmount the amount of tokens user wishes to withdraw
    */
-    function claimVestTokens(address _userAddresses, uint8 _vestingIndex,uint256 _tokenAmount)
+  function claimVestTokens(
+    address _userAddresses,
+    uint8 _vestingIndex,
+    uint256 _tokenAmount
+  )
     public
+    onlyAfterTGE
     whenNotPaused
     checkVestingStatus(_userAddresses, _vestingIndex)
     returns (bool)
@@ -452,16 +457,21 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
     uint256 tokensToTransfer =
       calculateClaimableTokens(_userAddresses, _vestingIndex);
 
-    require(tokensToTransfer > 0, "No tokens to transfer at this point of time");
-    require (_tokenAmount <= tokensToTransfer,"Cannot Claim more than Monthly Vest Amount");
+    require(
+      tokensToTransfer > 0,
+      "No tokens to transfer at this point of time"
+    );
+    require(
+      _tokenAmount <= tokensToTransfer,
+      "Cannot Claim more than Monthly Vest Amount"
+    );
     uint256 contractTokenBalance = balanceOf(address(this));
     require(
       contractTokenBalance > _tokenAmount,
       "Not Enough Token Balance in Contract"
     );
     require(
-      _totalTokensClaimed.add(_tokenAmount) <=
-        vestData.totalTokensAllocated,
+      _totalTokensClaimed.add(_tokenAmount) <= vestData.totalTokensAllocated,
       "Cannot Claim more than Allocated"
     );
 
@@ -475,7 +485,7 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
     _sendTokens(_userAddresses, _tokenAmount);
   }
 
-// Commented Out the withdraw function
+  // Commented Out the withdraw function
   // function withdrawContractTokens() external onlyOwner returns (bool) {
   //   uint256 remainingTokens = balanceOf(address(this));
   //   _sendTokens(owner(), remainingTokens);
