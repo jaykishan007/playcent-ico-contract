@@ -306,7 +306,7 @@ contract PlaycentTokenV1 is
    * @param _vestingIndex index number of the vesting type
    */
 
-  function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
+  function calculateClaimableVestTokens(address _userAddresses, uint8 _vestingIndex)
     public
     view
     checkVestingStatus(_userAddresses, _vestingIndex)
@@ -419,6 +419,11 @@ contract PlaycentTokenV1 is
     );
 
     uint256 tokensToTransfer = vestData.totalTGETokens;
+     uint256 contractTokenBalance = balanceOf(address(this));
+    require(
+      contractTokenBalance >= tokensToTransfer,
+      "Not Enough Token Balance in Contract"
+    );
 
     // Updating Contract State
     vestData.isTgeTokensClaimed = true;
@@ -455,7 +460,7 @@ contract PlaycentTokenV1 is
       totalTokensClaimed(_userAddresses, _vestingIndex);
     // Get the total claimable token amount at the time of calling this function
     uint256 tokensToTransfer =
-      calculateClaimableTokens(_userAddresses, _vestingIndex);
+      calculateClaimableVestTokens(_userAddresses, _vestingIndex);
 
     require(
       tokensToTransfer > 0,
@@ -467,7 +472,7 @@ contract PlaycentTokenV1 is
     );
     uint256 contractTokenBalance = balanceOf(address(this));
     require(
-      contractTokenBalance > _tokenAmount,
+      contractTokenBalance >= _tokenAmount,
       "Not Enough Token Balance in Contract"
     );
     require(
