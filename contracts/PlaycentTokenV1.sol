@@ -248,11 +248,12 @@ contract PlaycentTokenV1 is
     return totalClaimedTokens;
   }
 
-  /**
-   * @notice Calculates the amount of tokens to be transferred at any given point of time
-   * @param _userAddresses address of the User
-   */
-  function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
+  // /**
+  //  * @notice Calculates the amount of tokens to be transferred at any given point of time
+  //  * @param _userAddresses address of the User
+  //  */
+ 
+function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
     public
     view
     checkVestingStatus(_userAddresses, _vestingIndex)
@@ -265,10 +266,17 @@ contract PlaycentTokenV1 is
     // Get Time Details
     uint256 actualClaimableAmount;
     uint256 tokensAfterElapsedMonths;
-    uint256 vestStartTime = getTgeTIME();
+    uint256 vestStartTime = vestData.startTime;
     uint256 currentTime = getCurrentTime();
     uint256 timeElapsed = currentTime.sub(vestStartTime);
+
     uint256 totalMonthsElapsed = timeElapsed.div(monthInSeconds());
+    uint256 totalDaysElapsed = timeElapsed.div(daysInSeconds());
+    uint256 partialDaysElapsed = totalDaysElapsed.mod(30);
+
+    if(partialDaysElapsed > 0 && totalMonthsElapsed >0){
+        totalMonthsElapsed += 1;
+      }
 
     //Check whether or not the VESTING CLIFF has been reached
     require(
@@ -286,7 +294,7 @@ contract PlaycentTokenV1 is
       // if current time has crossed the Vesting Cliff but not the total Vesting Duration
       // Calculating Actual Months(Excluding the CLIFF) to initiate vesting
     } else {
-      uint256 actualMonthElapsed = totalMonthsElapsed.sub(vestData.lockPeriod);
+       uint256 actualMonthElapsed = totalMonthsElapsed.sub(vestData.lockPeriod);
       require(actualMonthElapsed > 0, "Number of months elapsed is ZERO");
       // Calculate the Total Tokens on the basis of Vesting Index and Month elapsed
       if (vestData.vestIndexID == 9) {
@@ -314,7 +322,6 @@ contract PlaycentTokenV1 is
     }
     return actualClaimableAmount;
   }
-
   /**
    * @notice Function to transfer tokens from this contract to the user
    * @param _beneficiary address of the User
@@ -335,8 +342,8 @@ contract PlaycentTokenV1 is
    * Once the tokens have been transferred, isTgeTokensClaimed becomes TRUE for that particular address
    * @param _userAddresses address of the User
    */
-  function _claimTGETokens(address _userAddresses, uint8 _vestingIndex)
-    internal
+  function claimTGETokens(address _userAddresses, uint8 _vestingIndex)
+    public
     onlyAfterTGE
     checkVestingStatus(_userAddresses, _vestingIndex)
     returns (bool)
@@ -362,17 +369,6 @@ contract PlaycentTokenV1 is
     _sendTokens(_userAddresses, tokensToTransfer);
   }
 
-  function claimTGETokensOnlyOwner(address _userAddresses, uint8 _vestingIndex)
-    external
-    onlyOwner
-    returns (bool)
-  {
-    _claimTGETokens(_userAddresses, _vestingIndex);
-  }
-
-  function claimTGETokens(uint8 _vestingIndex) external returns (bool) {
-    _claimTGETokens(msg.sender, _vestingIndex);
-  }
 
   /**
    * @notice Calculates and Transfers the total tokens to be transferred to the user by calculating the Amount of tokens to be transferred at the given time
@@ -381,8 +377,8 @@ contract PlaycentTokenV1 is
    * @dev User cannot claim more tokens than actually allocated to them by the OWNER
    * @param _userAddresses address of the User
    */
-  function _claimVestTokens(address _userAddresses, uint8 _vestingIndex)
-    internal
+    function _claimVestTokens(address _userAddresses, uint8 _vestingIndex,uint256 _tokenAmount)
+    public
     checkVestingStatus(_userAddresses, _vestingIndex)
     returns (bool)
   {
@@ -390,48 +386,52 @@ contract PlaycentTokenV1 is
     VestAllocation memory vestData =
       walletToVestAllocations[_userAddresses][_vestingIndex];
 
-    // Get total token amount to be transferred
+    // Get total amount of tokens claimed till date
     uint256 _totalTokensClaimed =
       totalTokensClaimed(_userAddresses, _vestingIndex);
+    // Get the total claimable token amount at the time of calling this function
     uint256 tokensToTransfer =
       calculateClaimableTokens(_userAddresses, _vestingIndex);
 
-    require(tokensToTransfer > 0, "No tokens to transfer");
+    require(tokensToTransfer > 0, "No tokens to transfer at this point of time");
+    require (_tokenAmount <= tokensToTransfer,"Cannot Claim more than Monthly Vest Amount");
     uint256 contractTokenBalance = balanceOf(address(this));
     require(
-      contractTokenBalance > tokensToTransfer,
+      contractTokenBalance > _tokenAmount,
       "Not Enough Token Balance in Contract"
     );
     require(
-      _totalTokensClaimed.add(tokensToTransfer) <=
+      _totalTokensClaimed.add(_tokenAmount) <=
         vestData.totalTokensAllocated,
       "Cannot Claim more than Allocated"
     );
 
-    vestData.totalVestTokensClaimed += tokensToTransfer;
+    vestData.totalVestTokensClaimed += _tokenAmount;
     if (
-      _totalTokensClaimed.add(tokensToTransfer) == vestData.totalTokensAllocated
+      _totalTokensClaimed.add(_tokenAmount) == vestData.totalTokensAllocated
     ) {
       vestData.isVesting = false;
     }
     walletToVestAllocations[_userAddresses][_vestingIndex] = vestData;
-    _sendTokens(_userAddresses, tokensToTransfer);
+    _sendTokens(_userAddresses, _tokenAmount);
   }
 
-  function claimVestTokensOnlyOwner(address _userAddresses, uint8 _vestingIndex)
-    external
-    onlyOwner
-    returns (bool)
-  {
-    _claimVestTokens(_userAddresses, _vestingIndex);
-  }
-
-  function claimVestTokens(uint8 _vestingIndex) external returns (bool) {
-    _claimVestTokens(msg.sender, _vestingIndex);
-  }
-
-  function withdrawContractTokens() external onlyOwner returns (bool) {
-    uint256 remainingTokens = balanceOf(address(this));
-    _sendTokens(owner(), remainingTokens);
-  }
+  // function withdrawContractTokens() external onlyOwner returns (bool) {
+  //   uint256 remainingTokens = balanceOf(address(this));
+  //   _sendTokens(owner(), remainingTokens);
+  // }
 }
+
+
+/**
+  * Fix CalculateClaimableTokens function
+  * TestCases for CalculateClaimableTokens
+  * Fix the ClaimVestTokens function, add additional parameter "TokenAmount" to get the amount of tokens to be withdrawn
+  * TestCases for ClaimVestTokens.
+  * Remobve claimTGETokensOnlyOwner. Make it the way it was initially
+  * Add modifier to check the vestingIndex in the addVestingDetails function.
+  * Comment out withdrawContractTokens function
+  * Fix TGE TIME
+  * Fix Modifier ERROR Message
+  * NATSPEC Annotations
+*/
