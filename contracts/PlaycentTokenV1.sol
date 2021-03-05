@@ -141,6 +141,15 @@ contract PlaycentTokenV1 is
     return block.timestamp;
   }
 
+
+ /**
+   * @notice Returns the total number of seconds in 1 Day
+   */
+  function  daysInSeconds() internal pure returns(uint256){
+    return 86400;
+  }
+  
+
  /**
    * @notice Returns the total number of seconds in 1 month
    */
@@ -422,7 +431,7 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
    * @dev User cannot claim more tokens than actually allocated to them by the OWNER
    * @param _userAddresses address of the User
    * @param _vestingIndex index of the vesting Type
-   * @param __tokenAmount the amount of tokens user wishes to withdraw
+   * @param _tokenAmount the amount of tokens user wishes to withdraw
    */
     function claimVestTokens(address _userAddresses, uint8 _vestingIndex,uint256 _tokenAmount)
     public
