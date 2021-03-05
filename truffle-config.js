@@ -18,9 +18,9 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-// const infuraKey = "fj4jll3k.....";
-//
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+const { infuraAPIKey, mnemonic, etherscanAPIKey } = require("./secrets.json");
+
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
@@ -43,10 +43,22 @@ module.exports = {
     // options below to some value.
     //
     development: {
-     host: "127.0.0.1",     // Localhost (default: none)
-     port: 8545,            // Standard Ethereum port (default: none)
-     network_id: "*",       // Any network (default: none)
+      host: "127.0.0.1", // Localhost (default: none)
+      port: 8545, // Standard Ethereum port (default: none)
+      network_id: "*", // Any network (default: none)
     },
+
+    rinkeby: {
+      provider: () =>
+        new HDWalletProvider(
+          mnemonic,
+          `https://rinkeby.infura.io/v3/${infuraAPIKey}`
+        ),
+      network_id: 4,
+      gasPrice: 10e9,
+      skipDryRun: true,
+    },
+
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port
@@ -82,15 +94,20 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.6.2",    // Fetch exact version from solc-bin (default: truffle's version)
-      docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
-      settings: {          // See the solidity docs for advice about optimization and evmVersion
-       optimizer: {
-         enabled: false,
-         runs: 200
-       },
-       evmVersion: "byzantium"
-      }
-    }
-  }
+      version: "0.6.2", // Fetch exact version from solc-bin (default: truffle's version)
+      docker: true, // Use "0.5.1" you've installed locally with docker (default: false)
+      settings: {
+        // See the solidity docs for advice about optimization and evmVersion
+        optimizer: {
+          enabled: false,
+          runs: 200,
+        },
+        evmVersion: "byzantium",
+      },
+    },
+  },
+  plugins: ["truffle-plugin-verify"],
+  api_keys: {
+    etherscan: etherscanAPIKey,
+  },
 };
