@@ -28,6 +28,8 @@ contract PlaycentTokenV1 is
    * Category 8 - Private 1
    * Category 9 - Private 2
    */
+
+  string public releaseSHA;
   struct VestType {
     uint8 indexId;
     uint8 lockPeriod;
@@ -49,18 +51,19 @@ contract PlaycentTokenV1 is
     bool isTgeTokensClaimed;
   }
 
-  mapping(uint256 => VestType) public vestTypes;
+  mapping(uint256 => VestType) internal vestTypes;
   mapping(address => mapping(uint8 => VestAllocation))
     public walletToVestAllocations;
 
   ILocker public override locker;
 
-  function initialize(address _PublicSaleAddress) public initializer {
+  function initialize(address _PublicSaleAddress,string memory _hash) public initializer {
     __Ownable_init();
     __ERC20_init("Playcent", "PCNT");
     __ERC20Pausable_init();
     _mint(owner(), 57600000 ether);
     _mint(_PublicSaleAddress, 2400000 ether);
+    releaseSHA = _hash;
 
     vestTypes[0] = VestType(0, 12, 32, 0, 5, 9000000 ether); // Team
     vestTypes[1] = VestType(1, 3, 13, 0, 10, 4800000 ether); // Operations
@@ -79,7 +82,6 @@ contract PlaycentTokenV1 is
     address _userAddresses,
     uint8 _vestingIndex
   ) {
-    require(_vestingIndex >= 0 && _vestingIndex <= 9, "Invalid Vesting Index");
     require(_userAddresses != address(0), "Invalid Address");
     require(
       !walletToVestAllocations[_userAddresses][_vestingIndex].isVesting,
@@ -91,8 +93,13 @@ contract PlaycentTokenV1 is
   modifier checkVestingStatus(address _userAddresses, uint8 _vestingIndex) {
     require(
       walletToVestAllocations[_userAddresses][_vestingIndex].isVesting,
-      "User NOT added to any Vesting Category"
+      "User NOT added to the provided vesting Index"
     );
+    _;
+  }
+
+  modifier onlyValidVestingIndex(uint8 _vestingIndex) {
+    require(_vestingIndex >= 0 && _vestingIndex <= 9, "Invalid Vesting Index");
     _;
   }
 
@@ -119,32 +126,61 @@ contract PlaycentTokenV1 is
     address sender,
     address recipient,
     uint256 amount
-  ) internal virtual override {
+  ) whenNotPaused internal virtual override {
     if (address(locker) != address(0)) {
       locker.lockOrGetPenalty(sender, recipient);
     }
     return super._transfer(sender, recipient, amount);
   }
 
-  function getCurrentTime() public view returns (uint256) {
+
+ /**
+   * @notice Returns current time
+   */
+  function getCurrentTime() internal view returns (uint256) {
     return block.timestamp;
   }
 
+ /**
+   * @notice Returns the total number of seconds in 1 month
+   */
   function monthInSeconds() internal pure returns (uint256) {
     return 2592000;
   }
 
+  /**
+   * @notice Returns the TGE time
+   */
   function getTgeTIME() public pure returns (uint256) {
     return 1615018379; // Sat Mar 06 2021 11:30:00 GMT+0000
   }
-
+  /**
+   * @notice Calculates the amount of tokens on the basis of monthly rate assigned
+   */
   function percentage(uint256 _totalAmount, uint256 _rate)
-    public
+    internal
     pure
     returns (uint256)
   {
     return _totalAmount.mul(_rate).div(100);
   }
+
+  /**
+   * @notice Pauses the contract.
+   * @dev Can only be called by the owner
+   */
+  function pauseContract() external onlyOwner{
+    _pause();
+  }
+
+/**
+   * @notice Pauses the contract.
+   * @dev Can only be called by the owner
+   */
+  function unPauseContract() external onlyOwner{
+      _unpause();
+  }
+
 
   /**
      * @notice - Allows only the Owner to ADD an array of Addresses as well as their Vesting Amount
@@ -160,7 +196,7 @@ contract PlaycentTokenV1 is
     address[] calldata _userAddresses,
     uint256[] calldata _vestingAmounts,
     uint8 _vestnigType
-  ) external onlyOwner returns (bool) {
+  ) external onlyOwner onlyValidVestingIndex(_vestnigType) returns (bool) {
     require(
       _userAddresses.length == _vestingAmounts.length,
       "Unequal arrays passed"
@@ -227,6 +263,11 @@ contract PlaycentTokenV1 is
     walletToVestAllocations[_userAddresses][_vestingIndex] = userVestingData;
   }
 
+  /**
+   * @notice Calculates the total amount of tokens Claimed by the User in a particular vesting category
+   * @param _userAddresses address of the User
+   * @param _vestingIndex index number of the vesting type
+   */
   function totalTokensClaimed(address _userAddresses, uint8 _vestingIndex)
     public
     view
@@ -248,10 +289,11 @@ contract PlaycentTokenV1 is
     return totalClaimedTokens;
   }
 
-  // /**
-  //  * @notice Calculates the amount of tokens to be transferred at any given point of time
-  //  * @param _userAddresses address of the User
-  //  */
+  /**
+   * @notice An internal function to calculate the total claimable tokens at any given point
+   * @param _userAddresses address of the User
+   * @param _vestingIndex index number of the vesting type
+   */
  
 function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
     public
@@ -266,10 +308,11 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
     // Get Time Details
     uint256 actualClaimableAmount;
     uint256 tokensAfterElapsedMonths;
-    uint256 vestStartTime = vestData.startTime;
+    uint256 vestStartTime = getTgeTIME();
     uint256 currentTime = getCurrentTime();
     uint256 timeElapsed = currentTime.sub(vestStartTime);
 
+    // Get the Elapsed Days and Months
     uint256 totalMonthsElapsed = timeElapsed.div(monthInSeconds());
     uint256 totalDaysElapsed = timeElapsed.div(daysInSeconds());
     uint256 partialDaysElapsed = totalDaysElapsed.mod(30);
@@ -341,10 +384,12 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
    * @dev The function can only be called once by the user(only if the isTgeTokensClaimed boolean value is FALSE).
    * Once the tokens have been transferred, isTgeTokensClaimed becomes TRUE for that particular address
    * @param _userAddresses address of the User
+   * @param _vestingIndex index of the vesting Type
    */
   function claimTGETokens(address _userAddresses, uint8 _vestingIndex)
     public
     onlyAfterTGE
+    whenNotPaused
     checkVestingStatus(_userAddresses, _vestingIndex)
     returns (bool)
   {
@@ -376,9 +421,12 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
    * @dev isVesting becomes false if all allocated tokens have been claimed.
    * @dev User cannot claim more tokens than actually allocated to them by the OWNER
    * @param _userAddresses address of the User
+   * @param _vestingIndex index of the vesting Type
+   * @param __tokenAmount the amount of tokens user wishes to withdraw
    */
-    function _claimVestTokens(address _userAddresses, uint8 _vestingIndex,uint256 _tokenAmount)
+    function claimVestTokens(address _userAddresses, uint8 _vestingIndex,uint256 _tokenAmount)
     public
+    whenNotPaused
     checkVestingStatus(_userAddresses, _vestingIndex)
     returns (bool)
   {
@@ -416,22 +464,9 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
     _sendTokens(_userAddresses, _tokenAmount);
   }
 
+// Commented Out the withdraw function
   // function withdrawContractTokens() external onlyOwner returns (bool) {
   //   uint256 remainingTokens = balanceOf(address(this));
   //   _sendTokens(owner(), remainingTokens);
   // }
 }
-
-
-/**
-  * Fix CalculateClaimableTokens function
-  * TestCases for CalculateClaimableTokens
-  * Fix the ClaimVestTokens function, add additional parameter "TokenAmount" to get the amount of tokens to be withdrawn
-  * TestCases for ClaimVestTokens.
-  * Remobve claimTGETokensOnlyOwner. Make it the way it was initially
-  * Add modifier to check the vestingIndex in the addVestingDetails function.
-  * Comment out withdrawContractTokens function
-  * Fix TGE TIME
-  * Fix Modifier ERROR Message
-  * NATSPEC Annotations
-*/
