@@ -217,6 +217,8 @@ contract PlaycentTokenV1 is
     VestType memory vestData = vestTypes[_vestingType];
     uint256 arrayLength = _userAddresses.length;
 
+    uint256 providedVestAmount;
+
     for (uint256 i = 0; i < arrayLength; i++) {
       uint8 vestIndexID = _vestingType;
       address userAddress = _userAddresses[i];
@@ -226,6 +228,7 @@ contract PlaycentTokenV1 is
       uint256 tgeAmount = percentage(totalAllocation, vestData.tgePercent);
       uint256 monthlyAmount =
         percentage(totalAllocation, vestData.monthlyPercent);
+      providedVestAmount += _vestingAmounts[i];
 
       addUserVestingDetails(
         userAddress,
@@ -237,6 +240,7 @@ contract PlaycentTokenV1 is
         monthlyAmount
       );
     }
+    _transfer(owner(), address(this), providedVestAmount);
     return true;
   }
 
