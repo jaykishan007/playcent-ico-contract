@@ -105,7 +105,7 @@ contract PlaycentTokenV1 is
 
   modifier onlyAfterTGE() {
     require(
-      getCurrentTime() > getTgeTIME(),
+      getCurrentTime() > getTGETime(),
       "Token Generation Event Not Started Yet"
     );
     _;
@@ -160,7 +160,7 @@ contract PlaycentTokenV1 is
   /**
    * @notice Returns the TGE time
    */
-  function getTgeTIME() public pure returns (uint256) {
+  function getTGETime() public pure returns (uint256) {
     return 1615018379; // Sat Mar 06 2021 11:30:00 GMT+0000
   }
   /**
@@ -317,7 +317,7 @@ function calculateClaimableTokens(address _userAddresses, uint8 _vestingIndex)
     // Get Time Details
     uint256 actualClaimableAmount;
     uint256 tokensAfterElapsedMonths;
-    uint256 vestStartTime = getTgeTIME();
+    uint256 vestStartTime = getTGETime();
     uint256 currentTime = getCurrentTime();
     uint256 timeElapsed = currentTime.sub(vestStartTime);
 
