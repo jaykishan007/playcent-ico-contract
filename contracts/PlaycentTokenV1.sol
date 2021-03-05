@@ -30,6 +30,7 @@ contract PlaycentTokenV1 is
    */
 
   string public releaseSHA;
+
   struct VestType {
     uint8 indexId;
     uint8 lockPeriod;
@@ -63,6 +64,7 @@ contract PlaycentTokenV1 is
     __ERC20Pausable_init();
     _mint(owner(), 57600000 ether);
     _mint(_PublicSaleAddress, 2400000 ether);
+    
     releaseSHA = _hash;
 
     vestTypes[0] = VestType(0, 12, 32, 0, 5, 9000000 ether); // Team
@@ -126,7 +128,7 @@ contract PlaycentTokenV1 is
     address sender,
     address recipient,
     uint256 amount
-  ) whenNotPaused internal virtual override {
+  ) internal virtual override {
     if (address(locker) != address(0)) {
       locker.lockOrGetPenalty(sender, recipient);
     }
