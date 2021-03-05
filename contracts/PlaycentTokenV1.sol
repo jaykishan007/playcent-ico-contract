@@ -197,26 +197,26 @@ contract PlaycentTokenV1 is
                - Thus, a particular batch of addresses shall be added under only one Vesting Category Index 
      * @param _userAddresses array of addresses of the Users
      * @param _vestingAmounts array of amounts to be vested
-     * @param _vestnigType allows the owner to select the type of vesting category
+     * @param _vestingType allows the owner to select the type of vesting category
      * @return - true if Function executes successfully
      */
 
   function addVestingDetails(
     address[] calldata _userAddresses,
     uint256[] calldata _vestingAmounts,
-    uint8 _vestnigType
-  ) external onlyOwner onlyValidVestingIndex(_vestnigType) returns (bool) {
+    uint8 _vestingType
+  ) external onlyOwner onlyValidVestingIndex(_vestingType) returns (bool) {
     require(
       _userAddresses.length == _vestingAmounts.length,
       "Unequal arrays passed"
     );
 
     // Get Vesting Category Details
-    VestType memory vestData = vestTypes[_vestnigType];
+    VestType memory vestData = vestTypes[_vestingType];
     uint256 arrayLength = _userAddresses.length;
 
     for (uint256 i = 0; i < arrayLength; i++) {
-      uint8 vestIndexID = _vestnigType;
+      uint8 vestIndexID = _vestingType;
       address userAddress = _userAddresses[i];
       uint256 totalAllocation = _vestingAmounts[i];
       uint8 lockPeriod = vestData.lockPeriod;
