@@ -58,15 +58,16 @@ contract PlaycentTokenV1 is
 
   ILocker public override locker;
 
-  function initialize(address _PublicSaleAddress, string memory _hash)
+  function initialize(address _PublicSaleAddress, address _exchangeLiquidityAddress, string memory _hash)
     public
     initializer
   {
     __Ownable_init();
     __ERC20_init("Playcent", "PCNT");
     __ERC20Pausable_init();
-    _mint(owner(), 57600000 ether);
+    _mint(owner(), 55200000 ether);
     _mint(_PublicSaleAddress, 2400000 ether);
+    _mint(_exchangeLiquidityAddress, 2400000 ether);
 
     releaseSHA = _hash;
 
@@ -163,7 +164,7 @@ contract PlaycentTokenV1 is
    * @notice Returns the TGE time
    */
   function getTGETime() public pure returns (uint256) {
-    return 1615018379; // Sat Mar 06 2021 11:30:00 GMT+0000
+    return 1615055400; // March 6, 2021 @ 6:30:00 pm
   }
 
   /**
@@ -240,6 +241,11 @@ contract PlaycentTokenV1 is
         monthlyAmount
       );
     }
+    uint256 ownerBalance = balanceOf(owner());
+    require(
+      ownerBalance >= providedVestAmount,
+      "Owner does't have required token balance"
+    );
     _transfer(owner(), address(this), providedVestAmount);
     return true;
   }
