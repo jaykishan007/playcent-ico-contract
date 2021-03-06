@@ -47,7 +47,19 @@ module.exports = {
       port: 8545, // Standard Ethereum port (default: none)
       network_id: "*", // Any network (default: none)
     },
-
+  // Mainnet Deployment Config
+    mainnet: {
+      provider: () =>
+        new HDWalletProvider(
+          mnemonic,
+          `https://mainnet.infura.io/v3/${infuraAPIKey}`
+        ),
+      network_id: 1,
+      gas: 8000000,
+      gasPrice: 70e9,
+      timeoutBlocks: 300,
+      skipDryRun: false,
+    },
     rinkeby: {
       provider: () =>
         new HDWalletProvider(
