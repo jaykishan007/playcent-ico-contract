@@ -244,7 +244,7 @@ contract PlaycentTokenV1 is
     uint256 ownerBalance = balanceOf(owner());
     require(
       ownerBalance >= providedVestAmount,
-      "Owner Doesn't Have Required Token Balance"
+      "Owner does't have required token balance"
     );
     _transfer(owner(), address(this), providedVestAmount);
     return true;
