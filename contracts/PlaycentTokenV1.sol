@@ -240,6 +240,11 @@ contract PlaycentTokenV1 is
         monthlyAmount
       );
     }
+    uint256 ownerBalance = balanceOf(owner());
+    require(
+      ownerBalance >= providedVestAmount,
+      "Owner Doesn't Have Required Token Balance"
+    );
     _transfer(owner(), address(this), providedVestAmount);
     return true;
   }
