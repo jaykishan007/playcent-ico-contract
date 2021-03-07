@@ -19,7 +19,12 @@
  */
 
 const HDWalletProvider = require("@truffle/hdwallet-provider");
-const { infuraAPIKey, mnemonic, etherscanAPIKey } = require("./secrets.json");
+const {
+  infuraAPIKey,
+  mnemonic,
+  etherscanAPIKey,
+  deployOwnerAddress,
+} = require("./secrets.json");
 
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
@@ -47,7 +52,7 @@ module.exports = {
       port: 8545, // Standard Ethereum port (default: none)
       network_id: "*", // Any network (default: none)
     },
-  // Mainnet Deployment Config
+    // Mainnet Deployment Config
     mainnet: {
       provider: () =>
         new HDWalletProvider(
@@ -56,9 +61,10 @@ module.exports = {
         ),
       network_id: 1,
       gas: 8000000,
-      gasPrice: 70e9,
+      gasPrice: 90e9,
       timeoutBlocks: 300,
-      skipDryRun: false,
+      skipDryRun: true,
+      from: deployOwnerAddress,
     },
     rinkeby: {
       provider: () =>
@@ -111,7 +117,7 @@ module.exports = {
       settings: {
         // See the solidity docs for advice about optimization and evmVersion
         optimizer: {
-          enabled: false,
+          enabled: true,
           runs: 200,
         },
         evmVersion: "byzantium",
